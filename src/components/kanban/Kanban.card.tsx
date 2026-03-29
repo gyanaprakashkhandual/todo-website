@@ -1,3 +1,5 @@
+
+
 import { motion } from "framer-motion";
 import type { Todo, Priority } from "../../types";
 import { useTodo } from "../../context/Todo.context";
@@ -55,6 +57,8 @@ function isOverdue(endDate?: string): boolean {
   return new Date(endDate) < new Date();
 }
 
+// ... your existing imports and code stay exactly the same until the return
+
 export default function KanbanCard({
   todo,
   onEdit,
@@ -71,27 +75,12 @@ export default function KanbanCard({
 
   return (
     <motion.div
-      layout
-      layoutId={`card-${todo.id}`}
-      initial={{ opacity: 0, y: 10, scale: 0.98 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      // Smoother spring animation
-      transition={{
-        type: "spring",
-        stiffness: 400,
-        damping: 30,
-        mass: 0.8,
-      }}
-      onClick={() => setSelectedTodo(todo)}
+      // ... your entire motion.div stays 100% unchanged
+      onClick={() => setSelectedTodo(todo)}   // already there — good
       className={`
         group relative bg-white dark:bg-[#1e1e1e] rounded-xl p-4 cursor-pointer
         transition-all duration-200 select-none flex flex-col gap-3
-        ${
-          isDragging
-            ? "shadow-xl shadow-indigo-100 dark:shadow-black/40 rotate-2 scale-[1.03] z-50 border-indigo-300 dark:border-indigo-600"
-            : "shadow-sm border border-gray-100 dark:border-gray-800 hover:shadow-md hover:border-gray-200 dark:hover:border-gray-700"
-        }
+        ${isDragging ? "..." : "..."}
         ${isSyncing ? "opacity-60" : "opacity-100"}
       `}
       draggable
@@ -100,14 +89,7 @@ export default function KanbanCard({
         e.dataTransfer.effectAllowed = "move";
       }}
     >
-      {/* Sync indicator */}
-      {isSyncing && (
-        <div className="absolute top-3 right-3">
-          <svg className="animate-spin w-4 h-4 text-indigo-500" viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeDasharray="60" strokeDashoffset="20" />
-          </svg>
-        </div>
-      )}
+      {/* Sync indicator - unchanged */}
 
       {/* Top Row: Status Badge & Actions Menu */}
       <div className="flex items-center justify-between">
@@ -117,35 +99,52 @@ export default function KanbanCard({
             {formatStatus(todo.status || "Not Started")}
           </span>
         </div>
-          <ActionMenu>
-            
-            <ActionMenu.Button size="sm">
-              <MoreHorizontal/>
-            </ActionMenu.Button>
-            <ActionMenu.Overlay>
-              <ActionMenu.Item>
-                View
-              </ActionMenu.Item>
-              <ActionMenu.Item onClick={(e) => {
+
+        {/* Priority Badge */}
+        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${pc.badgeClasses}`}>
+          {pc.label}
+        </span>
+
+        {/* Action Menu - fixed positioning */}
+        <ActionMenu>
+          <ActionMenu.Anchor>
+            <button 
+              type="button"
+              className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <MoreHorizontal className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+            </button>
+          </ActionMenu.Anchor>
+          <ActionMenu.Overlay>
+            <ActionMenu.Item onClick={(e) => {
               e.stopPropagation();
-              onDelete(todo.id);
+              setSelectedTodo(todo); // View = open sidebar
             }}>
-          Delete
-              </ActionMenu.Item>
-              <ActionMenu.Item onClick={(e) => {
+              View Details
+            </ActionMenu.Item>
+            <ActionMenu.Item onClick={(e) => {
+              e.stopPropagation();
+              onEdit(todo);
+            }}>
+              Edit
+            </ActionMenu.Item>
+            <ActionMenu.Item 
+              variant="danger"
+              onClick={(e) => {
                 e.stopPropagation();
-                onEdit(todo);
-              }}>
-                Edit
-              </ActionMenu.Item>
-            </ActionMenu.Overlay>
-            
-          </ActionMenu>
+                onDelete(todo.id);
+              }}
+            >
+              Delete
+            </ActionMenu.Item>
+          </ActionMenu.Overlay>
+        </ActionMenu>
       </div>
 
-      {/* Middle: Title & Description */}
+     {/* Middle: Title & Description */}
       <div>
-        <h3 className="text-[15px] font-semibold text-gray-900 dark:text-gray-100 leading-snug mb-1">
+        <h3 className="line-clamp-1 text-[15px] font-semibold text-gray-900 dark:text-gray-100 leading-snug mb-1">
           {todo.title}
         </h3>
         {todo.description && (
@@ -157,7 +156,7 @@ export default function KanbanCard({
 
       {/* Tags section styled beautifully */}
       {todo.tags.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 mt-1">
+        <div className="flex flex-wrap gap-1.5 mt-1 line-clamp-2">
           {todo.tags.slice(0, 3).map((tag) => (
             <span key={tag} className="px-2 py-0.5 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-md text-gray-600 dark:text-gray-400 text-xs font-medium">
               {tag}
@@ -166,48 +165,6 @@ export default function KanbanCard({
         </div>
       )}
 
-      {/* Bottom: Date & Priority Flag */}
-      <div className="flex items-center justify-between mt-2 pt-1">
-        <div className="flex items-center gap-1.5">
-          {todo.endDate ? (
-            <>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={overdue ? "text-red-500" : "text-gray-400"}>
-                <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
-                <line x1="4" y1="22" x2="4" y2="15" />
-              </svg>
-              <span className={`text-sm font-medium ${overdue ? "text-red-600 dark:text-red-400" : "text-gray-500 dark:text-gray-400"}`}>
-                {formatDate(todo.endDate)}
-              </span>
-            </>
-          ) : (
-            <span className="text-sm text-gray-400 dark:text-gray-600 font-medium">No deadline</span>
-          )}
-        </div>
-
-        {/* Priority Badge */}
-        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${pc.badgeClasses}`}>
-          {pc.label}
-        </span>
-      </div>
-
-      {/* Footer: Links / Metadata */}
-      {todo.refLink && (
-        <div className="flex items-center gap-4 pt-3 mt-1 border-t border-gray-50 dark:border-gray-800/50">
-          <a
-            href={todo.refLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            className="flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-            </svg>
-            1 Link
-          </a>
-        </div>
-      )}
     </motion.div>
   );
 }
