@@ -15,13 +15,8 @@ export const API_ENDPOINTS = {
     STATUS: (id: number) => `/api/todos/${id}/status`,
     STATS: '/api/todos/stats',
     TAGS: '/api/todos/tags',
-  }
+  },
 };
 
 export const TOKEN_KEY = 'todo_auth_token';
 export const USER_KEY = 'todo_auth_user';
-
-
-export const BASE_URL = 'http://localhost:8080';
-
-

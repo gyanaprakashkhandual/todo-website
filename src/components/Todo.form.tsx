@@ -748,7 +748,7 @@ export default function TodoFormModal({
             exit={{ opacity: 0, y: 24, scale: 0.98 }}
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
             className="
-              relative w-full sm:max-w-xl
+              relative w-full sm:max-w-2xl
               bg-white dark:bg-gray-900
               border-0 sm:border border-gray-200 dark:border-gray-800
               rounded-t-2xl sm:rounded-2xl

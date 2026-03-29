@@ -8,6 +8,7 @@ import LoadingScreen from './ui/Loading.ui';
 import HeroPage from './pages/app/Hero.page';
 import { Provider } from 'react-redux';
 import { store } from './lib/store';
+import { TodoProvider } from './context/Todo.context';
 
 function AppContent() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -25,11 +26,13 @@ function AppContent() {
 export default function App() {
   return (
     <Provider store={store}>
+      <TodoProvider>
       <ThemeProvider>
       <AuthProvider>
         <AppContent />
       </AuthProvider>
     </ThemeProvider>
+    </TodoProvider>
     </Provider>
   );
 }
