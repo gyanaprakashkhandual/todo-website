@@ -9,19 +9,13 @@ import {
   Moon,
   SlidersHorizontal,
   Tag,
-  LayoutGrid,
-  ChevronDown,
-  Check,
+  CheckSquare,
 } from "lucide-react";
 
 import { ActionMenu } from "../ui/Action.menu.ui";
 import { Tooltip } from "../ui/Tooltip.ui";
 import { useTheme } from "../context/Theme.context";
 import type { TodoStats, TodoFilterRequest, Priority } from "../types/index";
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Constants
-// ─────────────────────────────────────────────────────────────────────────────
 
 interface NavbarProps {
   user?: { name?: string; email?: string } | null;
@@ -50,10 +44,6 @@ const PRIORITY_DOT: Record<Priority, string> = {
   URGENT: "bg-red-500",
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Stat pill
-// ─────────────────────────────────────────────────────────────────────────────
-
 interface StatPillProps {
   label: string;
   value: number | string;
@@ -72,28 +62,22 @@ function StatPill({
   loading,
 }: StatPillProps) {
   return (
-    <Tooltip content={label} position="bottom" delay={300}>
-      <motion.div
-        initial={{ opacity: 0, y: -5 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: index * 0.05, duration: 0.2, ease: "easeOut" }}
-        className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 cursor-default select-none"
-      >
-        <span className={`w-2 h-2 rounded-full flex-shrink-0 ${dot}`} />
-        <span className={`text-xs font-semibold tabular-nums ${textColor}`}>
-          {loading ? "–" : value}
-        </span>
-        <span className="text-xs text-gray-400 dark:text-gray-500 hidden xl:inline">
-          {label}
-        </span>
-      </motion.div>
-    </Tooltip>
+    <motion.div
+      initial={{ opacity: 0, y: -5 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.05, duration: 0.2, ease: "easeOut" }}
+      className="flex items-center gap-1.5 px-3 py-2 rounded-md bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 cursor-default select-none"
+    >
+      <span className={`w-2 h-2 rounded-full shrink-0 ${dot}`} />
+      <span className={`text-xs font-semibold tabular-nums ${textColor}`}>
+        {loading ? "–" : value}
+      </span>
+      <span className="text-xs text-gray-400 dark:text-gray-500 hidden xl:inline">
+        {label}
+      </span>
+    </motion.div>
   );
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Theme Toggle — uses your ActionMenu
-// ─────────────────────────────────────────────────────────────────────────────
 
 function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
@@ -111,7 +95,7 @@ function ThemeToggle() {
             {theme === "light" ? <Sun size={14} /> : <Moon size={14} />}
           </motion.span>
         }
-        size="sm"
+        size="md"
         variant="default"
         aria-label="Toggle theme"
       >
@@ -148,10 +132,6 @@ function ThemeToggle() {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Priority Filter — uses your ActionMenu
-// ─────────────────────────────────────────────────────────────────────────────
-
 interface PriorityFilterProps {
   value: Priority | undefined;
   onChange: (p: Priority | undefined) => void;
@@ -162,7 +142,7 @@ function PriorityFilter({ value, onChange }: PriorityFilterProps) {
     <ActionMenu>
       <ActionMenu.Button
         leadingIcon={<SlidersHorizontal size={13} />}
-        size="sm"
+        size="md"
         variant="default"
         className={
           value
@@ -201,11 +181,6 @@ function PriorityFilter({ value, onChange }: PriorityFilterProps) {
     </ActionMenu>
   );
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Tag Filter — uses your ActionMenu
-// ─────────────────────────────────────────────────────────────────────────────
-
 interface TagFilterProps {
   value: string | undefined;
   tags: string[];
@@ -256,10 +231,6 @@ function TagFilter({ value, tags, onChange }: TagFilterProps) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Profile Menu — uses your ActionMenu with Anchor
-// ─────────────────────────────────────────────────────────────────────────────
-
 interface ProfileMenuProps {
   user?: { name?: string; email?: string } | null;
   onLogout: () => void;
@@ -284,7 +255,7 @@ function ProfileMenu({ user, onLogout }: ProfileMenuProps) {
         {/* User info header */}
         <ActionMenu.Header>
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-200 text-xs font-bold flex-shrink-0">
+            <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-200 text-xs font-bold shrink-0">
               {initials}
             </div>
             <div className="min-w-0">
@@ -311,10 +282,6 @@ function ProfileMenu({ user, onLogout }: ProfileMenuProps) {
     </ActionMenu>
   );
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Mobile filter drawer content
-// ─────────────────────────────────────────────────────────────────────────────
 
 interface MobileFiltersProps {
   filter: TodoFilterRequest;
@@ -412,7 +379,7 @@ function MobileFilters({
                   tag: undefined,
                 })
               }
-              className="inline-flex items-center gap-1 h-7 px-2.5 text-xs text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors"
+              className="inline-flex items-center gap-1 h-8.5 px-2.5 text-xs text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors"
             >
               <X size={11} />
               Clear
@@ -430,10 +397,6 @@ function MobileFilters({
     </div>
   );
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Main Navbar
-// ─────────────────────────────────────────────────────────────────────────────
 
 export default function Navbar({
   user,
@@ -490,25 +453,25 @@ export default function Navbar({
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.25, ease: "easeOut" }}
-          className="flex items-center gap-2.5 flex-shrink-0"
+          className="flex items-center gap-4 shrink-0 mr-1"
         >
           <div className="w-7 h-7 rounded-md bg-gray-900 dark:bg-white flex items-center justify-center shadow-sm">
-            <LayoutGrid size={14} className="text-white dark:text-gray-900" />
+            <CheckSquare size={14} className="text-white dark:text-gray-900" />
           </div>
-          <span className="font-semibold text-gray-900 dark:text-white text-sm tracking-tight hidden sm:inline">
-            Kanboard
+          <span className="font-bold text-gray-900 dark:text-white text-lg tracking-tight hidden sm:inline">
+            T O D O
           </span>
         </motion.div>
 
         {/* ── Stats — lg+ ── */}
-        <div className="hidden lg:flex items-center gap-1 flex-shrink-0">
+        <div className="hidden lg:flex items-center gap-3 shrink-0">
           {statItems.map((s, i) => (
             <StatPill key={s.label} {...s} index={i} loading={statsLoading} />
           ))}
         </div>
 
         {/* ── Search + filters — md+ ── */}
-        <div className="hidden md:flex items-center gap-2 flex-1 max-w-[500px]">
+        <div className="hidden md:flex items-center gap-2 flex-1 max-w-[500px] min-w-[500px]">
           {/* Search input */}
           <div className="relative flex-1 min-w-0">
             <Search
@@ -522,7 +485,7 @@ export default function Navbar({
               onChange={(e) =>
                 onFilterChange({ search: e.target.value || undefined })
               }
-              className="w-full h-8 pl-8 pr-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white focus:border-transparent hover:border-gray-300 dark:hover:border-gray-600 transition-all"
+              className="w-full h-8 pl-8 pr-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-900 dark:focus:ring-white focus:border-transparent hover:border-gray-300 dark:hover:border-gray-600 transition-all"
               aria-label="Search tasks"
             />
           </div>
@@ -568,7 +531,7 @@ export default function Navbar({
         <div className="flex-1 hidden md:block" />
 
         {/* ── Right actions ── */}
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex items-center gap-2 shrink-0">
           {/* Mobile: filter toggle — hidden md+ */}
           <div className="relative md:hidden">
             <Tooltip content="Filters" position="bottom">
@@ -600,21 +563,21 @@ export default function Navbar({
           <ThemeToggle />
 
           {/* New task */}
-          <Tooltip content="Create new task" position="bottom">
-            <motion.button
-              whileTap={{ scale: 0.95 }}
-              whileHover={{ scale: 1.02 }}
-              transition={{ duration: 0.1 }}
-              onClick={onNewTask}
-              className="inline-flex items-center gap-1.5 h-8 px-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-semibold rounded-md hover:bg-gray-700 dark:hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white focus:ring-offset-2 transition-colors shadow-sm whitespace-nowrap"
-            >
-              <Plus size={13} />
-              <span className="hidden sm:inline">New task</span>
-            </motion.button>
-          </Tooltip>
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.02 }}
+            transition={{ duration: 0.1 }}
+            onClick={onNewTask}
+            className="inline-flex items-center gap-1.5 h-8.5 px-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-semibold rounded-md hover:bg-gray-700 dark:hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white focus:ring-offset-2 transition-colors whitespace-nowrap"
+          >
+            <Plus size={13} />
+            <span className="hidden sm:inline">New task</span>
+          </motion.button>
 
           {/* Profile ActionMenu */}
-          <ProfileMenu user={user} onLogout={onLogout} />
+          <Tooltip content="Profile">
+            <ProfileMenu user={user} onLogout={onLogout} />
+          </Tooltip>
         </div>
       </div>
 
