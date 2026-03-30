@@ -7,11 +7,9 @@ import {
   fetchStats,
   fetchTags,
   updateTodo,
-  deleteTodo,
   setFilter,
 } from "../lib/features/todos/todo.slice";
 import { useAuth } from "../context/Auth.context";
-import { useConfirm } from "../context/Confirm.context";
 import Navbar from "./Navbar";
 import TodoFullViewPage from "./Todo.full.view";
 import TodoSidebar from "./Todo.sidebar";
@@ -22,7 +20,6 @@ export default function TodoFullView() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { showConfirm } = useConfirm();
   const { user, logout } = useAuth();
 
   const { todos, stats, tags, filter, loading, statsLoading } = useAppSelector(
@@ -49,26 +46,6 @@ export default function TodoFullView() {
   const handleSidebarCardClick = (todo: Todo) => {
     setActiveTodo(todo);
     navigate(`/todo/${todo.id}`, { replace: true });
-  };
-
-  const handleEdit = (todo: Todo) => {
-    setEditingTodo(todo);
-    setModalOpen(true);
-  };
-
-  const handleDelete = async (todoId: number) => {
-    const todo = todos.find((t) => t.id === todoId);
-    const confirmed = await showConfirm({
-      title: "Delete Task",
-      message: `Are you sure you want to delete "${todo?.title}"? This action cannot be undone.`,
-      confirmText: "Delete",
-      cancelText: "Cancel",
-      type: "danger",
-    });
-    if (!confirmed) return;
-    await dispatch(deleteTodo(todoId)).unwrap();
-    dispatch(fetchStats());
-    navigate("/", { replace: true });
   };
 
   const handleSubmit = async (req: TodoRequest) => {
@@ -153,13 +130,7 @@ export default function TodoFullView() {
         onViewDetail={handleSidebarCardClick}
       />
 
-      <TodoFullViewPage
-        todo={activeTodo}
-        open={!!activeTodo}
-        onClose={() => navigate("/", { replace: true })}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-      />
+      <TodoFullViewPage />
 
       <TodoFormModal
         open={modalOpen}
