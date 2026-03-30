@@ -221,7 +221,7 @@ export default function TodoFullViewPage() {
 
       <div className="flex flex-1 overflow-hidden">
         {/* ── Main content ── */}
-        <main className={`flex-1 overflow-y-auto transition-all duration-300 ${sidebarOpen ? "mr-[340px]" : "mr-0"}`}>
+        <main className={`flex-1 overflow-y-auto transition-all duration-300 ${sidebarOpen ? "ml-[340px]" : "ml-0"}`}>
           <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
 
             {/* Top bar */}
@@ -401,7 +401,7 @@ export default function TodoFullViewPage() {
                 className="fixed inset-0 bg-black/20 dark:bg-black/40 z-[98] sm:hidden"
                 onClick={() => setSidebarOpen(false)}
               />
-              <motion.div
+              {/* <motion.div
                 key="sidebar"
                 initial={{ x: "100%" }}
                 animate={{ x: 0 }}
@@ -415,7 +415,7 @@ export default function TodoFullViewPage() {
                   onClose={() => setSidebarOpen(false)}
                   onViewDetail={handleSidebarCardClick}
                 />
-              </motion.div>
+              </motion.div> */}
             </>
           )}
         </AnimatePresence>

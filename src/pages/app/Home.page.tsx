@@ -1,5 +1,5 @@
 import KanbanPage from '../../components/kanban/Main';
-import TodoDetailSidebar from '../../components/Sidebar';
+
 import { useTodo } from '../../context/Todo.context';
 
 export default function Dashboard() {
@@ -30,11 +30,6 @@ export default function Dashboard() {
         />
       )}
 
-      {/* Detail sidebar — always mounted, AnimatePresence handles show/hide */}
-      <TodoDetailSidebar
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-      />
     </div>
   );
 }

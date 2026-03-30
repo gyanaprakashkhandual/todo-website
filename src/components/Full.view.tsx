@@ -25,12 +25,13 @@ export default function TodoFullViewPage() {
   const { user, logout } = useAuth();
 
   const { todos, stats, tags, filter, loading, statsLoading } = useAppSelector(
-    (s) => s.todos
+    (s) => s.todos,
   );
 
   const [activeTodo, setActiveTodo] = useState<Todo | null>(null);
   const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   useEffect(() => {
     dispatch(fetchTodos({ size: 100 }));
@@ -38,7 +39,6 @@ export default function TodoFullViewPage() {
     dispatch(fetchTags());
   }, [dispatch]);
 
-  // Sync activeTodo from URL id whenever todos list loads/changes
   useEffect(() => {
     if (!id || todos.length === 0) return;
     const found = todos.find((t) => t.id === Number(id));
@@ -75,31 +75,45 @@ export default function TodoFullViewPage() {
     await dispatch(updateTodo({ id: editingTodo.id, req })).unwrap();
     dispatch(fetchStats());
     dispatch(fetchTags());
-    // Refresh activeTodo with updated data
     const updated = todos.find((t) => t.id === editingTodo.id);
     if (updated) setActiveTodo({ ...updated, ...req } as Todo);
     setModalOpen(false);
     setEditingTodo(null);
   };
 
-  // Loading state while todos haven't arrived yet
+  const sharedNavbarProps = {
+    user,
+    stats,
+    statsLoading,
+    filter,
+    tags,
+    onFilterChange: (f: typeof filter) => dispatch(setFilter(f)),
+    onNewTask: () => navigate("/"),
+    onLogout: logout,
+    sidebarOpen,
+    onToggleSidebar: () => setSidebarOpen((prev) => !prev),
+  };
+
   if (loading && todos.length === 0) {
     return (
       <div className="min-h-screen bg-white dark:bg-gray-950 flex flex-col">
-        <Navbar
-          user={user}
-          stats={stats}
-          statsLoading={statsLoading}
-          filter={filter}
-          tags={tags}
-          onFilterChange={(f) => dispatch(setFilter(f))}
-          onNewTask={() => navigate("/")}
-          onLogout={logout}
-        />
+        <Navbar {...sharedNavbarProps} />
         <div className="flex-1 flex items-center justify-center">
           <div className="flex items-center gap-3 text-gray-500 dark:text-gray-400">
-            <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeDasharray="60" strokeDashoffset="20" />
+            <svg
+              className="animate-spin w-5 h-5"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="3"
+                strokeDasharray="60"
+                strokeDashoffset="20"
+              />
             </svg>
             <span className="text-sm font-medium">Loading task…</span>
           </div>
@@ -108,22 +122,14 @@ export default function TodoFullViewPage() {
     );
   }
 
-  // Todo not found after load
   if (!loading && todos.length > 0 && !activeTodo) {
     return (
       <div className="min-h-screen bg-white dark:bg-gray-950 flex flex-col">
-        <Navbar
-          user={user}
-          stats={stats}
-          statsLoading={statsLoading}
-          filter={filter}
-          tags={tags}
-          onFilterChange={(f) => dispatch(setFilter(f))}
-          onNewTask={() => navigate("/")}
-          onLogout={logout}
-        />
+        <Navbar {...sharedNavbarProps} />
         <div className="flex-1 flex items-center justify-center flex-col gap-3">
-          <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">Task not found.</p>
+          <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">
+            Task not found.
+          </p>
           <button
             onClick={() => navigate("/")}
             className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline"
@@ -137,32 +143,15 @@ export default function TodoFullViewPage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 flex flex-col">
-      <Navbar
-        user={user}
-        stats={stats}
-        statsLoading={statsLoading}
-        filter={filter}
-        tags={tags}
-        onFilterChange={(f) => dispatch(setFilter(f))}
-        onNewTask={() => navigate("/")}
-        onLogout={logout}
-      />
+      <Navbar {...sharedNavbarProps} />
 
-      {/* Sidebar backdrop */}
-      <div
-        className="fixed inset-0"
-        onClick={() => navigate("/", { replace: true })}
-      />
-
-      {/* Sidebar — always open on this page */}
       <TodoSidebar
-        open={true}
+        open={sidebarOpen}
         todos={todos}
-        onClose={() => navigate("/", { replace: true })}
+        onClose={() => setSidebarOpen(false)}
         onViewDetail={handleSidebarCardClick}
       />
 
-      {/* Full view modal — always open on this page */}
       <TodoFullViewModal
         todo={activeTodo}
         open={!!activeTodo}
@@ -171,7 +160,6 @@ export default function TodoFullViewPage() {
         onDelete={handleDelete}
       />
 
-      {/* Edit form modal */}
       <TodoFormModal
         open={modalOpen}
         onClose={() => {
