@@ -13,12 +13,12 @@ import {
 import { useAuth } from "../context/Auth.context";
 import { useConfirm } from "../context/Confirm.context";
 import Navbar from "./Navbar";
-import TodoFullViewModal from "./Todo.full.view";
+import TodoFullViewPage from "./Todo.full.view";
 import TodoSidebar from "./Todo.sidebar";
 import TodoFormModal from "./Todo.form";
 import type { Todo, TodoRequest } from "../types/index";
 
-export default function TodoFullViewPage() {
+export default function TodoFullView() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -153,7 +153,7 @@ export default function TodoFullViewPage() {
         onViewDetail={handleSidebarCardClick}
       />
 
-      <TodoFullViewModal
+      <TodoFullViewPage
         todo={activeTodo}
         open={!!activeTodo}
         onClose={() => navigate("/", { replace: true })}

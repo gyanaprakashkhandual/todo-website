@@ -1,3 +1,7 @@
+/* eslint-disable react-hooks/set-state-in-effect */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react-refresh/only-export-components */
+
 import React, {
   forwardRef,
   useRef,
@@ -7,9 +11,14 @@ import React, {
   isValidElement,
   Children,
   useState,
+  type ReactElement,
+  type ReactNode,
+  type ButtonHTMLAttributes,
+  type MouseEvent,
+  type KeyboardEvent,
 } from "react";
 import { createPortal } from "react-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, easeInOut } from "framer-motion";
 import {
   ChevronDown,
   ChevronRight,
@@ -17,6 +26,7 @@ import {
   Search,
   X as XIcon,
 } from "lucide-react";
+
 import {
   ActionMenuProvider,
   useActionMenu,
@@ -28,6 +38,8 @@ function cn(...classes: (string | undefined | null | false)[]): string {
   return classes.filter(Boolean).join(" ");
 }
 
+// ====================== TYPES ======================
+
 export interface ActionMenuProps extends Omit<
   ActionMenuProviderProps,
   "nested"
@@ -35,6 +47,81 @@ export interface ActionMenuProps extends Omit<
   nested?: boolean;
   closeOnClickOutside?: boolean;
 }
+
+export interface ActionMenuAnchorProps {
+  children: ReactElement;
+}
+
+export interface ActionMenuButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  leadingIcon?: ReactNode;
+  showChevron?: boolean;
+  variant?: "default" | "danger" | "ghost" | "outline";
+  size?: "sm" | "md" | "lg";
+}
+
+export interface ActionMenuOverlayProps {
+  children: ReactNode;
+  minWidth?: number;
+  maxWidth?: number;
+  maxHeight?: number;
+  className?: string;
+}
+
+export interface ActionMenuListProps {
+  children: ReactNode;
+  className?: string;
+  search?: boolean;
+  searchPlaceholder?: string;
+  select?: boolean;
+  onSelectionChange?: (selectedItems: string[]) => void;
+}
+
+export interface ActionMenuItemProps {
+  children: ReactNode;
+  onSelect?: () => void;
+  leadingIcon?: ReactNode;
+  trailingVisual?: ReactNode;
+  shortcut?: string;
+  variant?: "default" | "danger";
+  disabled?: boolean;
+  selected?: boolean;
+  selectionVariant?: "single" | "multiple";
+  description?: string;
+  className?: string;
+  select?: boolean;
+}
+
+export interface ActionMenuSubmenuItemProps {
+  children: ReactNode;
+  leadingIcon?: ReactNode;
+  description?: string;
+  className?: string;
+}
+
+export interface ActionMenuGroupProps {
+  label?: string;
+  children: ReactNode;
+  className?: string;
+}
+
+export interface ActionMenuHeaderProps {
+  children: ReactNode;
+  className?: string;
+}
+
+export interface ActionMenuFooterProps {
+  children: ReactNode;
+  className?: string;
+}
+
+export interface ActionMenuNestedProps extends Omit<
+  ActionMenuProps,
+  "nested" | "position"
+> {
+  position?: MenuPosition;
+}
+
+// ====================== COMPONENT ======================
 
 function ActionMenuRoot({
   children,
@@ -52,33 +139,26 @@ function ActionMenuRoot({
       nested={nested}
       closeOnClickOutside={closeOnClickOutside}
     >
-      <div className="relative inline-block">{children}</div>
+      {children}
     </ActionMenuProvider>
   );
-}
-
-export interface ActionMenuAnchorProps {
-  children: React.ReactElement;
 }
 
 function ActionMenuAnchor({ children }: ActionMenuAnchorProps) {
   const { anchorRef, toggleMenu, open, menuId } = useActionMenu();
 
   const child = Children.only(children);
+
   if (!isValidElement(child)) {
     throw new Error(
-      "<ActionMenu.Anchor> requires exactly one React element child.",
+      "ActionMenu.Anchor requires exactly one React element child.",
     );
   }
 
-  return cloneElement(child as React.ReactElement<Record<string, unknown>>, {
+  return cloneElement(child as ReactElement<any>, {
     ref: anchorRef,
-    onClick: (e: React.MouseEvent) => {
-      (
-        child.props as Record<string, unknown> & {
-          onClick?: (e: React.MouseEvent) => void;
-        }
-      ).onClick?.(e);
+    onClick: (e: MouseEvent) => {
+      (child as ReactElement<any>).props.onClick?.(e);
       toggleMenu();
     },
     "aria-haspopup": "menu",
@@ -87,25 +167,21 @@ function ActionMenuAnchor({ children }: ActionMenuAnchorProps) {
   });
 }
 
-export interface ActionMenuButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  leadingIcon?: React.ReactNode;
-  showChevron?: boolean;
-  variant?: "default" | "danger" | "ghost" | "outline";
-  size?: "sm" | "md" | "lg";
-}
-
-const variantClasses: Record<string, string> = {
+const variantClasses: Record<
+  "default" | "danger" | "ghost" | "outline",
+  string
+> = {
   default:
-    "bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-neutral-100 hover:bg-neutral-50 dark:hover:bg-neutral-800 active:bg-neutral-100 dark:active:bg-neutral-700  ",
+    "bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-neutral-100 hover:bg-neutral-50 dark:hover:bg-neutral-800 active:bg-neutral-100 dark:active:bg-neutral-700",
   danger:
-    "bg-white dark:bg-neutral-900 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50  ",
+    "bg-white dark:bg-neutral-900 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50",
   ghost:
     "bg-transparent border border-transparent text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800",
   outline:
-    "bg-transparent border border-neutral-300 dark:border-neutral-600 text-neutral-900 dark:text-neutral-100 hover:bg-neutral-50 dark:hover:bg-neutral-800  ",
+    "bg-transparent border border-neutral-300 dark:border-neutral-600 text-neutral-900 dark:text-neutral-100 hover:bg-neutral-50 dark:hover:bg-neutral-800",
 };
 
-const sizeClasses: Record<string, string> = {
+const sizeClasses: Record<"sm" | "md" | "lg", string> = {
   sm: "h-7 px-2.5 text-xs gap-1.5 rounded-md",
   md: "h-9 px-3.5 text-sm gap-2 rounded-lg",
   lg: "h-11 px-5 text-base gap-2.5 rounded-xl",
@@ -123,13 +199,13 @@ const ActionMenuButton = forwardRef<HTMLButtonElement, ActionMenuButtonProps>(
       disabled,
       ...rest
     },
-    _forwardedRef,
+    ref,
   ) {
-    const { anchorRef, toggleMenu, open, menuId } = useActionMenu();
-
+    const { toggleMenu, open, menuId } = useActionMenu();
+    const anchorRef = useRef<HTMLButtonElement>(null);
     return (
       <button
-        ref={anchorRef as React.RefObject<HTMLButtonElement>}
+        ref={ref || anchorRef}
         type="button"
         role="button"
         aria-haspopup="menu"
@@ -145,58 +221,31 @@ const ActionMenuButton = forwardRef<HTMLButtonElement, ActionMenuButtonProps>(
         )}
         {...rest}
       >
-        {leadingIcon && (
-          <span className="shrink-0 text-neutral-500 dark:text-neutral-400">
-            {leadingIcon}
-          </span>
-        )}
-        <span className="truncate">{children}</span>
+        {leadingIcon && <span>{leadingIcon}</span>}
+        {children}
         {showChevron && (
-          <motion.span
-            animate={{ rotate: open ? 180 : 0 }}
-            transition={{ duration: 0.18, ease: "easeInOut" }}
-            className="shrink-0 text-neutral-400 dark:text-neutral-500 ml-auto"
-          >
-            <ChevronDown size={14} strokeWidth={2.5} />
-          </motion.span>
+          <ChevronDown className="w-4 h-4 opacity-70 group-hover:opacity-100 transition-opacity" />
         )}
       </button>
     );
   },
 );
 
-export interface ActionMenuOverlayProps {
-  children: React.ReactNode;
-  minWidth?: number;
-  maxWidth?: number;
-  maxHeight?: number;
-  className?: string;
-}
-
 const overlayVariants = {
   hidden: {
     opacity: 0,
     scale: 0.95,
-    transition: {
-      duration: 0.1,
-      ease: "easeInOut",
-    },
+    transition: { duration: 0.1, ease: easeInOut },
   },
   visible: {
     opacity: 1,
     scale: 1,
-    transition: {
-      duration: 0.14,
-      ease: [0.16, 1, 0.3, 1] as const,
-    },
+    transition: { duration: 0.14, ease: [0.16, 1, 0.3, 1] as const },
   },
   exit: {
     opacity: 0,
     scale: 0.95,
-    transition: {
-      duration: 0.1,
-      ease: "easeInOut",
-    },
+    transition: { duration: 0.1, ease: easeInOut },
   },
 };
 
@@ -237,14 +286,13 @@ function ActionMenuOverlay({
           ref={overlayRef}
           id={menuId}
           role="menu"
-          aria-orientation="vertical"
-          variants={overlayVariants}
           initial="hidden"
           animate="visible"
           exit="exit"
+          variants={overlayVariants}
           style={style}
           className={cn(
-            "overflow-y-auto overscroll-contain rounded-xl border border-neutral-200 dark:border-neutral-700/80 bg-white dark:bg-neutral-900 shadow-xl shadow-neutral-900/10 dark:shadow-black/40 ring-1 ring-neutral-900/5 dark:ring-white/5",
+            "bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-xl shadow-xl overflow-hidden",
             className,
           )}
         >
@@ -255,15 +303,6 @@ function ActionMenuOverlay({
   );
 
   return createPortal(overlay, document.body);
-}
-
-export interface ActionMenuListProps {
-  children: React.ReactNode;
-  className?: string;
-  search?: boolean;
-  searchPlaceholder?: string;
-  select?: boolean;
-  onSelectionChange?: (selectedItems: string[]) => void;
 }
 
 function ActionMenuList({
@@ -277,26 +316,28 @@ function ActionMenuList({
   const [searchQuery, setSearchQuery] = useState("");
   const [highlightedIndex, setHighlightedIndex] = useState(0);
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
-  const searchInputRef = useRef<HTMLInputElement>(null);
-  const itemsRef = useRef<HTMLLIElement[]>([]);
 
-  const getAllItems = useCallback(() => {
-    const items: React.ReactElement[] = [];
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const itemsRef = useRef<(HTMLLIElement | null)[]>([]);
+
+  const getAllItems = useCallback((): ReactElement[] => {
+    const items: ReactElement[] = [];
 
     React.Children.forEach(children, (child) => {
-      if (isValidElement(child)) {
-        if (child.type && (child.type as any).name === "ActionMenuItem") {
-          items.push(child);
-        } else if (child.props?.children) {
-          React.Children.forEach(child.props.children, (subChild) => {
-            if (
-              isValidElement(subChild) &&
-              (subChild.type as any).name === "ActionMenuItem"
-            ) {
-              items.push(subChild);
-            }
-          });
-        }
+      if (!isValidElement(child)) return;
+
+      if ((child.type as any).name === "ActionMenuItem") {
+        items.push(child);
+      } else if ((child as ReactElement<any>).props?.children) {
+        const typedChild = child as ReactElement<any>;
+        React.Children.forEach(typedChild.props.children, (subChild) => {
+          if (
+            isValidElement(subChild) &&
+            (subChild.type as any).name === "ActionMenuItem"
+          ) {
+            items.push(subChild);
+          }
+        });
       }
     });
 
@@ -309,7 +350,8 @@ function ActionMenuList({
     searchQuery.trim() === ""
       ? allItems
       : allItems.filter((item) => {
-          const label = String(item.props.children || "").toLowerCase();
+          const typedItem = item as ReactElement<any>;
+          const label = String(typedItem.props.children || "").toLowerCase();
           return label.includes(searchQuery.toLowerCase());
         });
 
@@ -327,7 +369,7 @@ function ActionMenuList({
   }, [searchQuery]);
 
   const handleSearchKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>) => {
+    (e: KeyboardEvent<HTMLInputElement>) => {
       switch (e.key) {
         case "ArrowDown":
           e.preventDefault();
@@ -381,165 +423,152 @@ function ActionMenuList({
   );
 
   const isItemSelected = useCallback(
-    (itemLabel: string) => {
-      return selectedItems.has(itemLabel);
-    },
+    (itemLabel: string) => selectedItems.has(itemLabel),
     [selectedItems],
   );
 
+  const wrapChildrenWithSelection = useCallback(
+    (items: ReactNode): ReactNode => {
+      if (!select) return items;
+
+      return Children.map(items, (child) => {
+        if (!isValidElement(child)) return child;
+
+        const typedChild = child as ReactElement<any>;
+
+        if ((typedChild.type as any).name === "ActionMenuItem") {
+          const itemLabel = String(typedChild.props.children || "");
+          const isSelected = isItemSelected(itemLabel);
+
+          return cloneElement(typedChild, {
+            ...typedChild.props,
+            selected: isSelected,
+            selectionVariant: "single" as const,
+            onSelect: () => {
+              handleItemSelect(itemLabel);
+              typedChild.props.onSelect?.();
+            },
+          });
+        }
+
+        if ((typedChild.type as any).name === "ActionMenuGroup") {
+          const wrappedGroupItems = Children.map(
+            typedChild.props.children,
+            (subChild) => {
+              if (!isValidElement(subChild)) return subChild;
+              const typedSubChild = subChild as ReactElement<any>;
+              if ((typedSubChild.type as any).name !== "ActionMenuItem")
+                return typedSubChild;
+
+              const itemLabel = String(typedSubChild.props.children || "");
+              const isSelected = isItemSelected(itemLabel);
+
+              return cloneElement(typedSubChild, {
+                ...typedSubChild.props,
+                selected: isSelected,
+                selectionVariant: "single" as const,
+                onSelect: () => {
+                  handleItemSelect(itemLabel);
+                  typedSubChild.props.onSelect?.();
+                },
+              });
+            },
+          );
+
+          return cloneElement(typedChild, {
+            children: wrappedGroupItems,
+          });
+        }
+
+        return typedChild;
+      });
+    },
+    [select, isItemSelected, handleItemSelect],
+  );
   const renderFilteredChildren = useCallback(() => {
     if (!search || searchQuery.trim() === "") {
       return wrapChildrenWithSelection(children);
     }
 
-    return React.Children.map(wrapChildrenWithSelection(children), (child) => {
+    return Children.map(wrapChildrenWithSelection(children), (child) => {
       if (!isValidElement(child)) return child;
 
-      if (
-        (child.type as any).name !== "ActionMenuGroup" &&
-        (child.type as any).name !== "ActionMenuItem"
-      ) {
-        return child;
+      const typedChild = child as ReactElement<any>;
+      const typeName = (typedChild.type as any).name;
+
+      if (typeName !== "ActionMenuGroup" && typeName !== "ActionMenuItem") {
+        return typedChild;
       }
 
-      if ((child.type as any).name === "ActionMenuGroup") {
-        const filteredGroupItems = React.Children.toArray(
-          child.props.children,
+      if (typeName === "ActionMenuGroup") {
+        const filteredGroupItems = Children.toArray(
+          typedChild.props.children,
         ).filter((subChild) => {
           if (!isValidElement(subChild)) return false;
-          if ((subChild.type as any).name !== "ActionMenuItem") return false;
-          const label = String(subChild.props.children || "").toLowerCase();
+          const typedSubChild = subChild as ReactElement<any>;
+          if ((typedSubChild.type as any).name !== "ActionMenuItem")
+            return false;
+
+          const label = String(
+            typedSubChild.props.children || "",
+          ).toLowerCase();
           return label.includes(searchQuery.toLowerCase());
         });
 
         if (filteredGroupItems.length === 0) return null;
 
-        return React.cloneElement(child as React.ReactElement, {
+        return cloneElement(typedChild, {
           children: filteredGroupItems,
         });
       }
 
-      if ((child.type as any).name === "ActionMenuItem") {
-        const label = String(child.props.children || "").toLowerCase();
-        if (label.includes(searchQuery.toLowerCase())) {
-          return child;
-        }
-      }
-
-      return null;
+      // ActionMenuItem
+      const label = String(typedChild.props.children || "").toLowerCase();
+      return label.includes(searchQuery.toLowerCase()) ? typedChild : null;
     });
-  }, [search, searchQuery, children, select, handleItemSelect, isItemSelected]);
-
-  const wrapChildrenWithSelection = useCallback(
-    (items: React.ReactNode) => {
-      if (!select) return items;
-
-      return React.Children.map(items, (child) => {
-        if (!isValidElement(child)) return child;
-
-        if ((child.type as any).name === "ActionMenuItem") {
-          const itemLabel = String(child.props.children || "");
-          const isSelected = isItemSelected(itemLabel);
-
-          return React.cloneElement(child as React.ReactElement, {
-            ...child.props,
-            selected: isSelected,
-            selectionVariant: "single",
-            onSelect: () => {
-              handleItemSelect(itemLabel);
-              child.props.onSelect?.();
-            },
-          });
-        }
-
-        if ((child.type as any).name === "ActionMenuGroup") {
-          const wrappedGroupItems = React.Children.map(
-            child.props.children,
-            (subChild) => {
-              if (!isValidElement(subChild)) return subChild;
-
-              if ((subChild.type as any).name === "ActionMenuItem") {
-                const itemLabel = String(subChild.props.children || "");
-                const isSelected = isItemSelected(itemLabel);
-
-                return React.cloneElement(subChild as React.ReactElement, {
-                  ...subChild.props,
-                  selected: isSelected,
-                  selectionVariant: "single",
-                  onSelect: () => {
-                    handleItemSelect(itemLabel);
-                    subChild.props.onSelect?.();
-                  },
-                });
-              }
-              return subChild;
-            },
-          );
-
-          return React.cloneElement(child as React.ReactElement, {
-            children: wrappedGroupItems,
-          });
-        }
-
-        return child;
-      });
-    },
-    [select, isItemSelected, handleItemSelect],
-  );
-
+  }, [search, searchQuery, children, wrapChildrenWithSelection]);
   return (
     <>
       {search && (
-        <div className="px-3 py-2.5 border-b border-neutral-100 dark:border-neutral-800">
+        <div className="relative px-3 pt-3 pb-2">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 dark:text-neutral-500 pointer-events-none" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
             <input
               ref={searchInputRef}
               type="text"
-              placeholder={searchPlaceholder}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={handleSearchKeyDown}
+              placeholder={searchPlaceholder}
               className="w-full pl-9 pr-9 py-2 text-sm rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-transparent"
               aria-label="Search menu items"
             />
             {searchQuery && (
               <button
+                type="button"
                 onClick={handleClearSearch}
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded transition-colors"
-                aria-label="Clear search"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300"
               >
-                <XIcon className="w-4 h-4 text-neutral-400 dark:text-neutral-500" />
+                <XIcon className="w-4 h-4" />
               </button>
             )}
           </div>
+
           {filteredItems.length === 0 && searchQuery && (
-            <p className="mt-2 text-xs text-neutral-500 dark:text-neutral-400 text-center">
+            <div className="px-3 py-6 text-center text-sm text-neutral-500">
               No items found
-            </p>
+            </div>
           )}
         </div>
       )}
-      <ul role="presentation" className={cn("py-1.5", className)}>
-        {search ? renderFilteredChildren() : children}
+
+      <ul className={cn("py-1 text-sm", className)}>
+        {search
+          ? renderFilteredChildren()
+          : wrapChildrenWithSelection(children)}
       </ul>
     </>
   );
-}
-
-export interface ActionMenuItemProps {
-  children: React.ReactNode;
-  onSelect?: () => void;
-  leadingIcon?: React.ReactNode;
-  trailingVisual?: React.ReactNode;
-  shortcut?: string;
-  variant?: "default" | "danger";
-  disabled?: boolean;
-  selected?: boolean;
-  selectionVariant?: "single" | "multiple";
-  description?: string;
-  className?: string;
-  select?: boolean;
 }
 
 function ActionMenuItem({
@@ -567,7 +596,7 @@ function ActionMenuItem({
   }, [disabled, onSelect, closeMenu, select]);
 
   const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
+    (e: KeyboardEvent<HTMLLIElement>) => {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
         handleActivate();
@@ -581,76 +610,44 @@ function ActionMenuItem({
   return (
     <li
       role="menuitem"
-      aria-disabled={disabled}
-      tabIndex={disabled ? -1 : 0}
+      tabIndex={-1}
       onClick={handleActivate}
       onKeyDown={handleKeyDown}
       className={cn(
-        "group relative flex items-start gap-2.5 px-3 py-2 mx-1.5 rounded-lg cursor-pointer select-none outline-none transition-colors duration-100",
-        "focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-neutral-300 dark:focus-visible:ring-neutral-600",
-        disabled
-          ? "opacity-40 cursor-not-allowed"
-          : isDanger
-            ? "text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40"
-            : "text-neutral-800 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800/80",
+        "group relative flex items-center gap-2.5 px-3 py-2 mx-1.5 rounded-lg cursor-pointer select-none outline-none transition-colors duration-100",
+        isDanger
+          ? "text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50"
+          : "text-neutral-800 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800/80",
+        disabled && "opacity-50 pointer-events-none",
         className,
       )}
     >
       {selectionVariant && (
-        <span className="mt-0.5 shrink-0 w-4 flex items-center justify-center">
-          {selected && (
-            <Check
-              size={13}
-              strokeWidth={2.5}
-              className="text-neutral-900 dark:text-neutral-100"
-            />
-          )}
-        </span>
+        <div className="w-4 flex items-center justify-center">
+          {selected && <Check className="w-4 h-4" />}
+        </div>
       )}
 
       {!selectionVariant && leadingIcon && (
-        <span
-          className={cn(
-            "mt-0.5 shrink-0",
-            isDanger
-              ? "text-red-500 dark:text-red-400"
-              : "text-neutral-500 dark:text-neutral-400 group-hover:text-neutral-700 dark:group-hover:text-neutral-300",
-          )}
-        >
-          {leadingIcon}
-        </span>
+        <span className="text-neutral-500">{leadingIcon}</span>
       )}
 
-      <span className="flex-1 min-w-0">
-        <span className="block text-sm font-medium leading-5 truncate">
-          {children}
-        </span>
+      <div className="flex-1 min-w-0">
+        <div>{children}</div>
         {description && (
-          <span className="block text-xs text-neutral-500 dark:text-neutral-400 mt-0.5 leading-4">
+          <div className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
             {description}
-          </span>
+          </div>
         )}
-      </span>
+      </div>
 
       {shortcut && (
-        <kbd className="shrink-0 mt-0.5 text-[11px] font-mono text-neutral-400 dark:text-neutral-500 bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded px-1 py-0.5 leading-none">
-          {shortcut}
-        </kbd>
+        <span className="text-xs text-neutral-400 font-mono">{shortcut}</span>
       )}
-      {!shortcut && trailingVisual && (
-        <span className="shrink-0 mt-0.5 text-neutral-400 dark:text-neutral-500">
-          {trailingVisual}
-        </span>
-      )}
+
+      {!shortcut && trailingVisual && <span>{trailingVisual}</span>}
     </li>
   );
-}
-
-export interface ActionMenuSubmenuItemProps {
-  children: React.ReactNode;
-  leadingIcon?: React.ReactNode;
-  description?: string;
-  className?: string;
 }
 
 function ActionMenuSubmenuItem({
@@ -659,17 +656,16 @@ function ActionMenuSubmenuItem({
   description,
   className,
 }: ActionMenuSubmenuItemProps) {
-  const { anchorRef, toggleMenu, open } = useActionMenu();
+  const { toggleMenu, open } = useActionMenu();
 
   return (
     <li
-      ref={anchorRef as React.RefObject<HTMLLIElement>}
       role="menuitem"
       aria-haspopup="menu"
       aria-expanded={open}
       tabIndex={0}
       onClick={toggleMenu}
-      onKeyDown={(e) => {
+      onKeyDown={(e: KeyboardEvent) => {
         if (e.key === "Enter" || e.key === " " || e.key === "ArrowRight") {
           e.preventDefault();
           toggleMenu();
@@ -681,106 +677,68 @@ function ActionMenuSubmenuItem({
         className,
       )}
     >
-      {leadingIcon && (
-        <span className="mt-0.5 shrink-0 text-neutral-500 dark:text-neutral-400 group-hover:text-neutral-700 dark:group-hover:text-neutral-300">
-          {leadingIcon}
-        </span>
-      )}
-      <span className="flex-1 min-w-0">
-        <span className="block text-sm font-medium leading-5 truncate">
-          {children}
-        </span>
+      {leadingIcon && <span>{leadingIcon}</span>}
+      <div className="flex-1">
+        {children}
         {description && (
-          <span className="block text-xs text-neutral-500 dark:text-neutral-400 mt-0.5 leading-4">
+          <div className="text-xs text-neutral-500 dark:text-neutral-400">
             {description}
-          </span>
+          </div>
         )}
-      </span>
-      <span className="mt-0.5 shrink-0 text-neutral-400 dark:text-neutral-500">
-        <ChevronRight size={14} strokeWidth={2} />
-      </span>
+      </div>
+      <ChevronRight className="w-4 h-4 opacity-60" />
     </li>
   );
 }
 
 function ActionMenuDivider() {
-  return (
-    <li
-      role="separator"
-      aria-orientation="horizontal"
-      className="my-1.5 mx-0 h-px bg-neutral-100 dark:bg-neutral-800"
-    />
-  );
-}
-
-export interface ActionMenuGroupProps {
-  label?: string;
-  children: React.ReactNode;
-  className?: string;
+  return <li className="h-px bg-neutral-200 dark:bg-neutral-700 my-1 mx-3" />;
 }
 
 let groupIdCounter = 0;
+
 function ActionMenuGroup({ label, children, className }: ActionMenuGroupProps) {
   const labelId = useRef(`amg-${++groupIdCounter}`).current;
+
   return (
-    <li role="presentation" className={cn("", className)}>
+    <li role="group" aria-labelledby={labelId}>
       {label && (
         <div
           id={labelId}
-          role="presentation"
-          className="px-4 pt-2 pb-1 text-[11px] font-semibold tracking-wider uppercase text-neutral-400 dark:text-neutral-500 select-none"
+          className="px-3 py-1.5 text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-widest"
         >
           {label}
         </div>
       )}
-      <ul role="group" aria-labelledby={label ? labelId : undefined}>
-        {children}
-      </ul>
+      <ul className={cn("py-1", className)}>{children}</ul>
     </li>
   );
-}
-
-export interface ActionMenuHeaderProps {
-  children: React.ReactNode;
-  className?: string;
 }
 
 function ActionMenuHeader({ children, className }: ActionMenuHeaderProps) {
   return (
     <div
       className={cn(
-        "px-4 py-3 border-b border-neutral-100 dark:border-neutral-800 text-sm font-semibold text-neutral-900 dark:text-neutral-100",
+        "px-4 py-3 border-b border-neutral-200 dark:border-neutral-700 text-sm font-medium",
         className,
       )}
     >
       {children}
     </div>
   );
-}
-
-export interface ActionMenuFooterProps {
-  children: React.ReactNode;
-  className?: string;
 }
 
 function ActionMenuFooter({ children, className }: ActionMenuFooterProps) {
   return (
     <div
       className={cn(
-        "px-3 py-2 border-t border-neutral-100 dark:border-neutral-800",
+        "px-4 py-3 border-t border-neutral-200 dark:border-neutral-700",
         className,
       )}
     >
       {children}
     </div>
   );
-}
-
-export interface ActionMenuNestedProps extends Omit<
-  ActionMenuProps,
-  "nested" | "position"
-> {
-  position?: MenuPosition;
 }
 
 function ActionMenuNested({
@@ -789,11 +747,13 @@ function ActionMenuNested({
   ...rest
 }: ActionMenuNestedProps) {
   return (
-    <ActionMenuRoot nested position={position} {...rest}>
+    <ActionMenuRoot {...rest} nested position={position}>
       {children}
     </ActionMenuRoot>
   );
 }
+
+// ====================== EXPORT ======================
 
 export const ActionMenu = Object.assign(ActionMenuRoot, {
   Anchor: ActionMenuAnchor,

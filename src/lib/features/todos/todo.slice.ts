@@ -5,6 +5,7 @@ import {
 } from "@reduxjs/toolkit";
 import { apiClient } from "../../../service/api.service";
 import { API_ENDPOINTS } from "../../../configs/config";
+import axios from "axios";
 import type {
   Todo,
   TodoRequest,
@@ -57,29 +58,39 @@ export const fetchTodos = createAsyncThunk(
   },
 );
 
-export const fetchStats = createAsyncThunk(
-  "todos/fetchStats",
-  async (_, { rejectWithValue }) => {
-    try {
-      const res = await apiClient.get<TodoStats>(API_ENDPOINTS.TODOS.STATS);
-      return res.data;
-    } catch (e: unknown) {
-      return rejectWithValue((e as Error).message);
-    }
-  },
-);
+export const fetchStats = createAsyncThunk<
+  TodoStats,
+  void,
+  { rejectValue: string }
+>("todos/fetchStats", async (_, { rejectWithValue }) => {
+  try {
+    const res = await axios.get<TodoStats>(API_ENDPOINTS.TODOS.STATS);
 
-export const fetchTags = createAsyncThunk(
-  "todos/fetchTags",
-  async (_, { rejectWithValue }) => {
-    try {
-      const res = await apiClient.get<string[]>(API_ENDPOINTS.TODOS.TAGS);
-      return res.data;
-    } catch (e: unknown) {
-      return rejectWithValue((e as Error).message);
+    return res.data;
+  } catch (e: unknown) {
+    if (axios.isAxiosError(e)) {
+      return rejectWithValue(e.response?.data?.message || e.message);
     }
-  },
-);
+    return rejectWithValue("Something went wrong");
+  }
+});
+
+export const fetchTags = createAsyncThunk<
+  string[],
+  void,
+  { rejectValue: string }
+>("todos/fetchTags", async (_, { rejectWithValue }) => {
+  try {
+    const res = await axios.get<string[]>(API_ENDPOINTS.TODOS.TAGS);
+
+    return res.data;
+  } catch (e: unknown) {
+    if (axios.isAxiosError(e)) {
+      return rejectWithValue(e.response?.data?.message || e.message);
+    }
+    return rejectWithValue("Something went wrong");
+  }
+});
 
 export const createTodo = createAsyncThunk(
   "todos/create",

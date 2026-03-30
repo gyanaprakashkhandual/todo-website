@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -217,8 +218,20 @@ function SkeletonLoader() {
     </div>
   );
 }
-
-export default function TodoFullViewPage() {
+type TodoFullViewPageProps = {
+  todo: Todo | null;
+  open: boolean;
+  onClose: () => void | Promise<void>;
+  onEdit: (todo: Todo) => void;
+  onDelete: (todoId: number) => Promise<void>;
+};
+export default function TodoFullViewPage({
+  todo,
+  open,
+  onClose,
+  onEdit,
+  onDelete,
+}: TodoFullViewPageProps) {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();

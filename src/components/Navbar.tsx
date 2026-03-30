@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
   Plus,
-  X,
   LogOut,
   Sun,
   Moon,
@@ -216,16 +215,6 @@ function TagFilter({ value, tags, onChange }: TagFilterProps) {
             All tags
           </ActionMenu.Item>
           <ActionMenu.Divider />
-          {tags.map((t) => (
-            <ActionMenu.Item
-              key={t}
-              selected={value === t}
-              selectionVariant="single"
-              onSelect={() => onChange(t)}
-            >
-              #{t}
-            </ActionMenu.Item>
-          ))}
         </ActionMenu.List>
       </ActionMenu.Overlay>
     </ActionMenu>
@@ -298,8 +287,6 @@ function MobileFilters({
   stats,
   statsLoading,
 }: MobileFiltersProps) {
-  const hasFilters = filter.search || filter.priority || filter.tag;
-
   const statItems = [
     {
       label: "Total",
@@ -362,28 +349,6 @@ function MobileFilters({
           tags={tags}
           onChange={(t) => onFilterChange({ tag: t })}
         />
-
-        <AnimatePresence>
-          {hasFilters && (
-            <motion.button
-              initial={{ opacity: 0, scale: 0.88 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.88 }}
-              transition={{ duration: 0.14 }}
-              onClick={() =>
-                onFilterChange({
-                  search: undefined,
-                  priority: undefined,
-                  tag: undefined,
-                })
-              }
-              className="inline-flex items-center gap-1 h-8.5 px-2.5 text-xs text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors"
-            >
-              <X size={11} />
-              Clear
-            </motion.button>
-          )}
-        </AnimatePresence>
       </div>
 
       <div className="flex items-center gap-1.5 flex-wrap">
@@ -492,28 +457,6 @@ export default function Navbar({
             tags={tags}
             onChange={(t) => onFilterChange({ tag: t })}
           />
-
-          <AnimatePresence>
-            {hasFilters && (
-              <motion.button
-                initial={{ opacity: 0, scale: 0.85, width: 0 }}
-                animate={{ opacity: 1, scale: 1, width: "auto" }}
-                exit={{ opacity: 0, scale: 0.85, width: 0 }}
-                transition={{ duration: 0.15, ease: "easeOut" }}
-                onClick={() =>
-                  onFilterChange({
-                    search: undefined,
-                    priority: undefined,
-                    tag: undefined,
-                  })
-                }
-                className="inline-flex items-center gap-1 h-7 px-2.5 overflow-hidden whitespace-nowrap text-xs text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md hover:bg-gray-50 dark:hover:bg-gray-750 hover:border-gray-300 dark:hover:border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white transition-colors"
-              >
-                <X size={11} />
-                Clear
-              </motion.button>
-            )}
-          </AnimatePresence>
         </div>
 
         <div className="flex-1 hidden md:block" />
