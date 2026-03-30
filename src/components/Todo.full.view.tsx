@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, easeOut } from "framer-motion";
 import { useAppDispatch, useAppSelector } from "../lib/store";
 import {
   fetchTodos,
@@ -122,7 +122,7 @@ const stagger = {
     show: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.22, ease: [0.25, 0.46, 0.45, 0.94] },
+      transition: { duration: 0.22, ease: easeOut },
     },
   },
 };

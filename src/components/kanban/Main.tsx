@@ -15,7 +15,7 @@ import {
 } from "../../lib/features/todos/todo.slice";
 import { useAuth } from "../../context/Auth.context";
 import { useConfirm } from "../../context/Confirm.context";
-import KanbanColumn from "./Kanban.coloumn";
+import KanbanColumn from "./Kanban.column";
 import TodoFormModal from "../Todo.form";
 import Navbar from "../Navbar";
 import type {
@@ -237,7 +237,6 @@ export default function KanbanPage() {
                   strokeDashoffset="20"
                 />
               </svg>
-              <span className="text-sm font-medium">Loading tasks…</span>
             </div>
           </div>
         ) : (

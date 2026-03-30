@@ -15,3 +15,7 @@ button {
 ::-webkit-scrollbar-thumb {
   background-color: gray
 }
+
+.select-none {
+  user-select: none;
+}

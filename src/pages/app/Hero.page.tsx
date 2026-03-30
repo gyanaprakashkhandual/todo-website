@@ -265,7 +265,7 @@ export default function HeroPage({}: HeroPageProps) {
   };
 
   return (
-    <div className="relative min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-white overflow-x-hidden flex flex-col">
+    <div className="select-none relative min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-white overflow-x-hidden flex flex-col">
       <GridPattern />
 
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-150 h-90 bg-gray-100 dark:bg-gray-800/60 rounded-full blur-3xl opacity-40 dark:opacity-20 pointer-events-none" />
@@ -337,7 +337,7 @@ export default function HeroPage({}: HeroPageProps) {
             </motion.button>
             <button
               onClick={handleSignIn}
-              className="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors px-2"
+              className="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors px-6 border border-gray-200 dark:border-gray-700 rounded-lg py-3"
             >
               Sign in instead →
             </button>
@@ -438,13 +438,6 @@ export default function HeroPage({}: HeroPageProps) {
               className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
             >
               Terms
-            </a>
-            <a
-              href="https://gyanprakash.vercel.app/support"
-              target="_blank"
-              className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-            >
-              Support
             </a>
           </div>
 

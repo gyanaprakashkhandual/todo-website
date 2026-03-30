@@ -55,7 +55,7 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 flex flex-col">
+    <div className="select-none min-h-screen bg-white dark:bg-gray-950 flex flex-col">
       <main className="flex-1 flex items-center justify-center px-4 py-10 sm:py-16">
         <div className="w-full max-w-4xl flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
           <motion.div

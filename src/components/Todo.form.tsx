@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, easeOut } from "framer-motion";
 import {
   X,
   Calendar,
@@ -683,7 +684,7 @@ export default function TodoFormModal({
     visible: (i: number) => ({
       opacity: 1,
       y: 0,
-      transition: { delay: i * 0.04, duration: 0.22, ease: "easeOut" },
+      transition: { delay: i * 0.04, duration: 0.22, ease: easeOut },
     }),
   };
 
@@ -944,26 +945,26 @@ export default function TodoFormModal({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
                     <DateField
                       label="Start Date"
-                      value={form.startDate}
+                      value={form.startDate as string}
                       onChange={(v) => setForm({ ...form, startDate: v })}
                       placeholder="No start date"
                     />
                     <DateField
                       label="End Date"
-                      value={form.endDate}
+                      value={form.endDate as string}
                       onChange={(v) => setForm({ ...form, endDate: v })}
                       minDate={form.startDate || undefined}
                       placeholder="No end date"
                     />
                     <TimeField
                       label="Start Time"
-                      value={form.startTime}
+                      value={form.startTime as string}
                       onChange={(v) => setForm({ ...form, startTime: v })}
                       placeholder="No start time"
                     />
                     <TimeField
                       label="End Time"
-                      value={form.endTime}
+                      value={form.endTime as string}
                       onChange={(v) => setForm({ ...form, endTime: v })}
                       placeholder="No end time"
                     />
