@@ -177,7 +177,7 @@ export default function KanbanCard({
       transition={{ duration: 0.18, ease: [0.25, 0.46, 0.45, 0.94] }}
       whileHover={!isDragging ? { y: -1, transition: { duration: 0.12 } } : {}}
       draggable
-      onDragStart={(e: React.DragEvent) => {
+      onDragStartCapture={(e: React.DragEvent<HTMLDivElement>) => {
         e.dataTransfer.setData("todoId", String(todo.id));
         e.dataTransfer.effectAllowed = "move";
 
