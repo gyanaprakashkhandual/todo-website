@@ -3,7 +3,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import type { Theme } from "../types";
+import type { Theme } from "../types/index";
 
 interface ThemeContextValue {
   theme: Theme;

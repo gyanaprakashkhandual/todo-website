@@ -7,6 +7,10 @@
     "axe/name-role-value": "off",
     "no-inline-styles": "off",
     "axe/aria": "off",
-    "axe/structure": "off"
+    "axe/structure": "off",
+    "disown-opener": "off",
+    "typescript-config/is-valid": "off",
+    "typescript-config/strict": "off",
+    "typescript-config/consistent-casing": "off"
   }
 }

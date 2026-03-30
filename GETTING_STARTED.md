@@ -4,14 +4,14 @@
 
 ## Tech Stack
 
-| Tool | Purpose |
-|---|---|
-| React 18 | UI framework |
-| TypeScript | Type safety |
-| Vite | Build tool and dev server |
-| Tailwind CSS | Utility-first styling |
-| Framer Motion | Animations and transitions |
-| Primer UI | GitHub's React component library |
+| Tool          | Purpose                          |
+| ------------- | -------------------------------- |
+| React 18      | UI framework                     |
+| TypeScript    | Type safety                      |
+| Vite          | Build tool and dev server        |
+| Tailwind CSS  | Utility-first styling            |
+| Framer Motion | Animations and transitions       |
+| Primer UI     | GitHub's React component library |
 
 ---
 
@@ -88,13 +88,10 @@ todo-web/
 ### `tailwind.config.ts`
 
 ```typescript
-import type { Config } from 'tailwindcss';
+import type { Config } from "tailwindcss";
 
 const config: Config = {
-  content: [
-    './index.html',
-    './src/**/*.{ts,tsx}',
-  ],
+  content: ["./index.html", "./src/**/*.{ts,tsx}"],
   theme: {
     extend: {},
   },
@@ -119,15 +116,15 @@ export default config;
 ### `vite.config.ts`
 
 ```typescript
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import path from 'path';
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import path from "path";
 
 export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      "@": path.resolve(__dirname, "./src"),
     },
   },
   server: {
@@ -173,20 +170,20 @@ export default defineConfig({
 ### `src/main.tsx`
 
 ```tsx
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { ThemeProvider, BaseStyles } from '@primer/react';
-import App from './App';
-import './index.css';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { ThemeProvider, BaseStyles } from "@primer/react";
+import App from "./App";
+import "./index.css";
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <ThemeProvider colorMode="auto">
       <BaseStyles>
         <App />
       </BaseStyles>
     </ThemeProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );
 ```
 
@@ -200,7 +197,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 ### `src/types/todo.ts`
 
 ```typescript
-export type Priority = 'low' | 'medium' | 'high';
+export type Priority = "low" | "medium" | "high";
 
 export interface Todo {
   id: string;
@@ -218,28 +215,31 @@ export interface Todo {
 ### `src/hooks/useTodos.ts`
 
 ```typescript
-import { useState, useCallback } from 'react';
-import { Todo, Priority } from '@/types/todo';
+import { useState, useCallback } from "react";
+import { Todo, Priority } from "@/types/todo";
 
 export function useTodos() {
   const [todos, setTodos] = useState<Todo[]>([]);
 
-  const addTodo = useCallback((title: string, priority: Priority = 'medium') => {
-    const newTodo: Todo = {
-      id: crypto.randomUUID(),
-      title,
-      completed: false,
-      priority,
-      createdAt: new Date(),
-    };
-    setTodos((prev) => [newTodo, ...prev]);
-  }, []);
+  const addTodo = useCallback(
+    (title: string, priority: Priority = "medium") => {
+      const newTodo: Todo = {
+        id: crypto.randomUUID(),
+        title,
+        completed: false,
+        priority,
+        createdAt: new Date(),
+      };
+      setTodos((prev) => [newTodo, ...prev]);
+    },
+    [],
+  );
 
   const toggleTodo = useCallback((id: string) => {
     setTodos((prev) =>
       prev.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      )
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo,
+      ),
     );
   }, []);
 
@@ -258,23 +258,23 @@ export function useTodos() {
 ### `src/components/TodoForm.tsx`
 
 ```tsx
-import React, { useState } from 'react';
-import { TextInput, Button, Select } from '@primer/react';
-import { Priority } from '@/types/todo';
+import React, { useState } from "react";
+import { TextInput, Button, Select } from "@primer/react";
+import { Priority } from "@/types/todo";
 
 interface TodoFormProps {
   onAdd: (title: string, priority: Priority) => void;
 }
 
 const TodoForm: React.FC<TodoFormProps> = ({ onAdd }) => {
-  const [title, setTitle] = useState<string>('');
-  const [priority, setPriority] = useState<Priority>('medium');
+  const [title, setTitle] = useState<string>("");
+  const [priority, setPriority] = useState<Priority>("medium");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) return;
     onAdd(title.trim(), priority);
-    setTitle('');
+    setTitle("");
   };
 
   return (
@@ -309,11 +309,11 @@ export default TodoForm;
 ### `src/components/TodoItem.tsx`
 
 ```tsx
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Box, Checkbox, Text, IconButton, Label } from '@primer/react';
-import { TrashIcon } from '@primer/octicons-react';
-import { Todo } from '@/types/todo';
+import React from "react";
+import { motion } from "framer-motion";
+import { Box, Checkbox, Text, IconButton, Label } from "@primer/react";
+import { TrashIcon } from "@primer/octicons-react";
+import { Todo } from "@/types/todo";
 
 interface TodoItemProps {
   todo: Todo;
@@ -321,10 +321,10 @@ interface TodoItemProps {
   onDelete: (id: string) => void;
 }
 
-const priorityVariant: Record<string, 'default' | 'attention' | 'danger'> = {
-  low: 'default',
-  medium: 'attention',
-  high: 'danger',
+const priorityVariant: Record<string, "default" | "attention" | "danger"> = {
+  low: "default",
+  medium: "attention",
+  high: "danger",
 };
 
 const TodoItem: React.FC<TodoItemProps> = ({ todo, onToggle, onDelete }) => {
@@ -355,8 +355,8 @@ const TodoItem: React.FC<TodoItemProps> = ({ todo, onToggle, onDelete }) => {
           />
           <Text
             fontSize={1}
-            color={todo.completed ? 'fg.muted' : 'fg.default'}
-            sx={{ textDecoration: todo.completed ? 'line-through' : 'none' }}
+            color={todo.completed ? "fg.muted" : "fg.default"}
+            sx={{ textDecoration: todo.completed ? "line-through" : "none" }}
           >
             {todo.title}
           </Text>
@@ -384,11 +384,11 @@ export default TodoItem;
 ### `src/components/TodoList.tsx`
 
 ```tsx
-import React from 'react';
-import { AnimatePresence } from 'framer-motion';
-import { Box, Text } from '@primer/react';
-import { Todo } from '@/types/todo';
-import TodoItem from './TodoItem';
+import React from "react";
+import { AnimatePresence } from "framer-motion";
+import { Box, Text } from "@primer/react";
+import { Todo } from "@/types/todo";
+import TodoItem from "./TodoItem";
 
 interface TodoListProps {
   todos: Todo[];
@@ -399,11 +399,7 @@ interface TodoListProps {
 const TodoList: React.FC<TodoListProps> = ({ todos, onToggle, onDelete }) => {
   if (todos.length === 0) {
     return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        padding={6}
-      >
+      <Box display="flex" justifyContent="center" padding={6}>
         <Text color="fg.muted" fontSize={1}>
           No todos yet. Add one above.
         </Text>
@@ -437,12 +433,12 @@ export default TodoList;
 ### `src/App.tsx`
 
 ```tsx
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Box, Heading, Text, CounterLabel } from '@primer/react';
-import TodoForm from '@/components/TodoForm';
-import TodoList from '@/components/TodoList';
-import { useTodos } from '@/hooks/useTodos';
+import React from "react";
+import { motion } from "framer-motion";
+import { Box, Heading, Text, CounterLabel } from "@primer/react";
+import TodoForm from "@/components/TodoForm";
+import TodoList from "@/components/TodoList";
+import { useTodos } from "@/hooks/useTodos";
 
 const App: React.FC = () => {
   const { todos, addTodo, toggleTodo, deleteTodo } = useTodos();
@@ -467,7 +463,11 @@ const App: React.FC = () => {
           flexDirection="column"
           gap={4}
         >
-          <Box display="flex" alignItems="center" justifyContent="space-between">
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+          >
             <Heading as="h1" sx={{ fontSize: 4 }}>
               Todo
             </Heading>
@@ -479,11 +479,7 @@ const App: React.FC = () => {
           </Box>
 
           <TodoForm onAdd={addTodo} />
-          <TodoList
-            todos={todos}
-            onToggle={toggleTodo}
-            onDelete={deleteTodo}
-          />
+          <TodoList todos={todos} onToggle={toggleTodo} onDelete={deleteTodo} />
         </Box>
       </motion.div>
     </div>
@@ -531,26 +527,26 @@ npm run preview
 
 ## package.json Scripts Reference
 
-| Command | Action |
-|---|---|
-| `npm run dev` | Start dev server at localhost:3000 |
-| `npm run build` | Production build to `dist/` |
-| `npm run preview` | Preview production build locally |
-| `npm run lint` | Run ESLint |
+| Command           | Action                             |
+| ----------------- | ---------------------------------- |
+| `npm run dev`     | Start dev server at localhost:3000 |
+| `npm run build`   | Production build to `dist/`        |
+| `npm run preview` | Preview production build locally   |
+| `npm run lint`    | Run ESLint                         |
 
 ---
 
 ## Architecture Summary
 
-| File | Role |
-|---|---|
-| `src/main.tsx` | App entry — mounts React, wraps with Primer ThemeProvider |
-| `src/App.tsx` | Root layout, page-level animation |
-| `src/hooks/useTodos.ts` | All todo state and logic |
-| `src/types/todo.ts` | Shared TypeScript types |
-| `src/components/TodoForm.tsx` | Primer inputs, adds new todos |
-| `src/components/TodoItem.tsx` | Framer Motion item animation + Primer UI |
-| `src/components/TodoList.tsx` | AnimatePresence for list enter/exit |
+| File                          | Role                                                      |
+| ----------------------------- | --------------------------------------------------------- |
+| `src/main.tsx`                | App entry — mounts React, wraps with Primer ThemeProvider |
+| `src/App.tsx`                 | Root layout, page-level animation                         |
+| `src/hooks/useTodos.ts`       | All todo state and logic                                  |
+| `src/types/todo.ts`           | Shared TypeScript types                                   |
+| `src/components/TodoForm.tsx` | Primer inputs, adds new todos                             |
+| `src/components/TodoItem.tsx` | Framer Motion item animation + Primer UI                  |
+| `src/components/TodoList.tsx` | AnimatePresence for list enter/exit                       |
 
 ---
 

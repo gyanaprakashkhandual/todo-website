@@ -195,7 +195,7 @@ function TagFilter({ value, tags, onChange }: TagFilterProps) {
     <ActionMenu>
       <ActionMenu.Button
         leadingIcon={<Tag size={13} />}
-        size="sm"
+        size="md"
         variant="default"
         className={
           value

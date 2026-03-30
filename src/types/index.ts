@@ -91,3 +91,5 @@ export interface KanbanColumn {
   color: string;
   accent: string;
 }
+
+export type Theme = "light" | "dark";
