@@ -19,6 +19,8 @@ import Dashboard from "./pages/app/Home.page";
 import HeroPage from "./pages/app/Hero.page";
 import LoadingScreen from "./ui/Loading.ui";
 import TodoFullViewPage from "./components/Full.view";
+import { ConfirmProvider } from "./context/Confirm.context";
+import { ActionMenuProvider } from "./context/Action.menu.ui.context";
 
 // ─── Inner app (has access to all contexts) ───────────────────────────────────
 function AppContent() {
@@ -81,6 +83,8 @@ function AppContent() {
 export default function App() {
   return (
     <Provider store={store}>
+      <ActionMenuProvider>
+      <ConfirmProvider>
       <ThemeProvider>
         <AuthProvider>
           <TodoProvider>
@@ -88,6 +92,8 @@ export default function App() {
           </TodoProvider>
         </AuthProvider>
       </ThemeProvider>
+      </ConfirmProvider>
+      </ActionMenuProvider>
     </Provider>
   );
 }

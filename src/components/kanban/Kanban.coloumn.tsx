@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Todo, TodoStatus } from "../../types/index";
 import KanbanCard from "./Kanban.card";
+import { Tooltip } from "../../ui/Tooltip.ui";
+import { Plus } from "lucide-react";
 
 interface KanbanColumnProps {
   id: TodoStatus;
@@ -54,9 +56,9 @@ export default function KanbanColumn({
   };
 
   return (
-    <div className="flex flex-col w-[340px] min-w-[300px] max-w-[360px] flex-shrink-0">
+    <div className="flex flex-col w-[340px] min-w-[300px] max-w-[360px] flex-shrink-0 min-h-[84vh] max-h-[84vh]">
       {/* Column header */}
-      <div className="flex items-center justify-between px-3 py-2.5 mb-3 rounded-xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-sm">
+      <div className="flex items-center justify-between px-3 py-2.5 mb-3 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm">
         <div className="flex items-center gap-2.5">
           <span
             className="w-1 h-5 rounded-full shrink-0"
@@ -73,22 +75,14 @@ export default function KanbanColumn({
           </span>
         </div>
 
-        <motion.button
-          whileHover={{ scale: 1.08 }}
-          whileTap={{ scale: 0.92 }}
+        <Tooltip content={`Add to ${title}`}>
+          <motion.button
           onClick={() => onAddNew(id)}
           className="w-7 h-7 flex items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-white dark:hover:bg-gray-700 transition-all shadow-sm"
-          title={`Add to ${title}`}
         >
-          <svg
-            width="11" height="11" viewBox="0 0 24 24"
-            fill="none" stroke="currentColor" strokeWidth="2.5"
-            strokeLinecap="round" strokeLinejoin="round"
-          >
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
+          <Plus className="h-3 w-3"/>
         </motion.button>
+        </Tooltip>
       </div>
 
       {/* Drop zone */}
@@ -96,9 +90,9 @@ export default function KanbanColumn({
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        className={`flex-1 min-h-[120px] rounded-xl p-2 space-y-2 transition-all duration-200 ${
+        className={`flex-1 min-h-[79vh] max-h-[79vh] overflow-auto rounded-xl p-2 space-y-2 transition-all duration-200 ${
           isOver
-            ? "bg-blue-50/60 dark:bg-blue-900/10 border-2 border-dashed border-blue-300 dark:border-blue-700 shadow-inner"
+            ? "bg-blue-50/60 dark:bg-blue-900/10 border-2 border-dashed border-gray-200 dark:border-blue-700 shadow-inner"
             : "bg-gray-50/70 dark:bg-gray-800/30 border-2 border-transparent"
         }`}
       >
@@ -144,7 +138,7 @@ export default function KanbanColumn({
             </p>
             <button
               onClick={() => onAddNew(id)}
-              className="text-[11px] font-semibold transition-colors hover:underline"
+              className="text-[11px] font-semibold transition-colors"
               style={{ color }}
             >
               + Add task
@@ -169,14 +163,6 @@ export default function KanbanColumn({
           )}
         </AnimatePresence>
       </div>
-
-      {todos.length > 0 && (
-        <div className="mt-2 px-1">
-          <p className="text-[10px] text-gray-400 dark:text-gray-600 text-center tracking-wide">
-            {todos.length} {todos.length === 1 ? "task" : "tasks"}
-          </p>
-        </div>
-      )}
     </div>
   );
 }

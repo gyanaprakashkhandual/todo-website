@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/refs */
 /* eslint-disable react-refresh/only-export-components */
 import {
   createContext,
@@ -46,15 +45,12 @@ export interface ActionMenuContextValue {
   nested: boolean;
 }
 
-// Context for sharing menu state & refs
 const ActionMenuContext = createContext<ActionMenuContextValue | null>(null);
 
 export function useActionMenu(): ActionMenuContextValue {
   const ctx = useContext(ActionMenuContext);
   if (!ctx) {
-    throw new Error(
-      "useActionMenu must be used within an <ActionMenu.Provider>",
-    );
+    throw new Error("useActionMenu must be used within an <ActionMenu.Provider>");
   }
   return ctx;
 }
@@ -66,86 +62,27 @@ function generateId() {
 
 const MENU_MARGIN = 8;
 
-// Calculates best position avoiding viewport edges
 export function computePosition(
   anchor: DOMRect,
   overlay: DOMRect,
   preference: MenuPosition,
   viewport: { width: number; height: number },
 ): ComputedPosition {
-  const positions: Record<
-    Exclude<MenuPosition, "auto">,
-    () => ComputedPosition
-  > = {
-    "bottom-start": () => ({
-      top: anchor.bottom + MENU_MARGIN,
-      left: anchor.left,
-      transformOrigin: "top left",
-      placement: "bottom-start",
-    }),
-    "bottom-end": () => ({
-      top: anchor.bottom + MENU_MARGIN,
-      left: anchor.right - overlay.width,
-      transformOrigin: "top right",
-      placement: "bottom-end",
-    }),
-    "bottom-center": () => ({
-      top: anchor.bottom + MENU_MARGIN,
-      left: anchor.left + anchor.width / 2 - overlay.width / 2,
-      transformOrigin: "top center",
-      placement: "bottom-center",
-    }),
-    "top-start": () => ({
-      top: anchor.top - overlay.height - MENU_MARGIN,
-      left: anchor.left,
-      transformOrigin: "bottom left",
-      placement: "top-start",
-    }),
-    "top-end": () => ({
-      top: anchor.top - overlay.height - MENU_MARGIN,
-      left: anchor.right - overlay.width,
-      transformOrigin: "bottom right",
-      placement: "top-end",
-    }),
-    "top-center": () => ({
-      top: anchor.top - overlay.height - MENU_MARGIN,
-      left: anchor.left + anchor.width / 2 - overlay.width / 2,
-      transformOrigin: "bottom center",
-      placement: "top-center",
-    }),
-    "left-start": () => ({
-      top: anchor.top,
-      left: anchor.left - overlay.width - MENU_MARGIN,
-      transformOrigin: "right top",
-      placement: "left-start",
-    }),
-    "left-end": () => ({
-      top: anchor.bottom - overlay.height,
-      left: anchor.left - overlay.width - MENU_MARGIN,
-      transformOrigin: "right bottom",
-      placement: "left-end",
-    }),
-    "right-start": () => ({
-      top: anchor.top,
-      left: anchor.right + MENU_MARGIN,
-      transformOrigin: "left top",
-      placement: "right-start",
-    }),
-    "right-end": () => ({
-      top: anchor.bottom - overlay.height,
-      left: anchor.right + MENU_MARGIN,
-      transformOrigin: "left bottom",
-      placement: "right-end",
-    }),
+  const positions: Record<Exclude<MenuPosition, "auto">, () => ComputedPosition> = {
+    "bottom-start": () => ({ top: anchor.bottom + MENU_MARGIN, left: anchor.left, transformOrigin: "top left", placement: "bottom-start" }),
+    "bottom-end": () => ({ top: anchor.bottom + MENU_MARGIN, left: anchor.right - overlay.width, transformOrigin: "top right", placement: "bottom-end" }),
+    "bottom-center": () => ({ top: anchor.bottom + MENU_MARGIN, left: anchor.left + anchor.width / 2 - overlay.width / 2, transformOrigin: "top center", placement: "bottom-center" }),
+    "top-start": () => ({ top: anchor.top - overlay.height - MENU_MARGIN, left: anchor.left, transformOrigin: "bottom left", placement: "top-start" }),
+    "top-end": () => ({ top: anchor.top - overlay.height - MENU_MARGIN, left: anchor.right - overlay.width, transformOrigin: "bottom right", placement: "top-end" }),
+    "top-center": () => ({ top: anchor.top - overlay.height - MENU_MARGIN, left: anchor.left + anchor.width / 2 - overlay.width / 2, transformOrigin: "bottom center", placement: "top-center" }),
+    "left-start": () => ({ top: anchor.top, left: anchor.left - overlay.width - MENU_MARGIN, transformOrigin: "right top", placement: "left-start" }),
+    "left-end": () => ({ top: anchor.bottom - overlay.height, left: anchor.left - overlay.width - MENU_MARGIN, transformOrigin: "right bottom", placement: "left-end" }),
+    "right-start": () => ({ top: anchor.top, left: anchor.right + MENU_MARGIN, transformOrigin: "left top", placement: "right-start" }),
+    "right-end": () => ({ top: anchor.bottom - overlay.height, left: anchor.right + MENU_MARGIN, transformOrigin: "left bottom", placement: "right-end" }),
   };
 
   const AUTO_PRIORITY: Exclude<MenuPosition, "auto">[] = [
-    "bottom-start",
-    "bottom-end",
-    "top-start",
-    "top-end",
-    "right-start",
-    "left-start",
+    "bottom-start", "bottom-end", "top-start", "top-end", "right-start", "left-start",
   ];
 
   function fits(pos: ComputedPosition): boolean {
@@ -160,20 +97,13 @@ export function computePosition(
   }
 
   function clamp(pos: ComputedPosition): ComputedPosition {
-    const t = Math.max(
-      MENU_MARGIN,
-      Math.min(pos.top ?? 0, viewport.height - overlay.height - MENU_MARGIN),
-    );
-    const l = Math.max(
-      MENU_MARGIN,
-      Math.min(pos.left ?? 0, viewport.width - overlay.width - MENU_MARGIN),
-    );
+    const t = Math.max(MENU_MARGIN, Math.min(pos.top ?? 0, viewport.height - overlay.height - MENU_MARGIN));
+    const l = Math.max(MENU_MARGIN, Math.min(pos.left ?? 0, viewport.width - overlay.width - MENU_MARGIN));
     return { ...pos, top: t, left: l };
   }
 
   if (preference !== "auto") {
-    const calculated = positions[preference]();
-    return clamp(calculated);
+    return clamp(positions[preference]());
   }
 
   for (const p of AUTO_PRIORITY) {
@@ -184,7 +114,6 @@ export function computePosition(
   return clamp(positions["bottom-start"]());
 }
 
-// Provides menu state, positioning, keyboard & click-outside handling
 export interface ActionMenuProviderProps {
   children: React.ReactNode;
   open?: boolean;
@@ -208,9 +137,11 @@ export function ActionMenuProvider({
 
   const anchorRef = useRef<HTMLElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
-  const [computedPosition, setComputedPosition] =
-    useState<ComputedPosition | null>(null);
+  const [computedPosition, setComputedPosition] = useState<ComputedPosition | null>(null);
   const menuId = useRef(generateId()).current;
+
+  // Track whether pointer went down inside the overlay — if yes, don't close on click outside
+  const pointerDownInsideRef = useRef(false);
 
   const setOpen = useCallback(
     (next: boolean) => {
@@ -228,14 +159,9 @@ export function ActionMenuProvider({
     const anchor = anchorRef.current;
     const overlay = overlayRef.current;
     if (!anchor || !overlay) return;
-
     const anchorRect = anchor.getBoundingClientRect();
     const overlayRect = overlay.getBoundingClientRect();
-    const viewport = {
-      width: window.innerWidth,
-      height: window.innerHeight,
-    };
-
+    const viewport = { width: window.innerWidth, height: window.innerHeight };
     const pos = computePosition(anchorRect, overlayRect, position, viewport);
     setComputedPosition(pos);
   }, [position]);
@@ -250,17 +176,35 @@ export function ActionMenuProvider({
 
   useEffect(() => {
     if (!open || !closeOnClickOutside) return;
+
+    // Use pointerdown only to RECORD whether the press was inside overlay/anchor.
+    // Never close on pointerdown — wait for the click to complete first.
     function handlePointerDown(e: PointerEvent) {
       const target = e.target as Node;
-      if (
-        overlayRef.current?.contains(target) ||
-        anchorRef.current?.contains(target)
-      )
-        return;
-      closeMenu();
+      const insideOverlay = overlayRef.current?.contains(target) ?? false;
+      const insideAnchor = anchorRef.current?.contains(target) ?? false;
+      pointerDownInsideRef.current = insideOverlay || insideAnchor;
     }
-    document.addEventListener("pointerdown", handlePointerDown);
-    return () => document.removeEventListener("pointerdown", handlePointerDown);
+
+    // Close only on click (after mousedown+mouseup cycle completes),
+    // and only if the original pointerdown was outside both overlay and anchor.
+    function handleClick(e: MouseEvent) {
+      if (pointerDownInsideRef.current) return;
+      const target = e.target as Node;
+      const insideOverlay = overlayRef.current?.contains(target) ?? false;
+      const insideAnchor = anchorRef.current?.contains(target) ?? false;
+      if (!insideOverlay && !insideAnchor) {
+        closeMenu();
+      }
+    }
+
+    document.addEventListener("pointerdown", handlePointerDown, true);
+    document.addEventListener("click", handleClick, true);
+
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown, true);
+      document.removeEventListener("click", handleClick, true);
+    };
   }, [open, closeMenu, closeOnClickOutside]);
 
   useEffect(() => {
