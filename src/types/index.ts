@@ -1,8 +1,6 @@
-// ── Enums ─────────────────────────────────────────────────────────────────────
-export type Priority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
-export type TodoStatus = 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+export type Priority = "LOW" | "MEDIUM" | "HIGH" | "URGENT";
+export type TodoStatus = "PENDING" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED";
 
-// ── Auth ──────────────────────────────────────────────────────────────────────
 export interface User {
   name: string;
   email: string;
@@ -19,7 +17,6 @@ export interface RegisterRequest {
   password: string;
 }
 
-// ── Todo ──────────────────────────────────────────────────────────────────────
 export interface Todo {
   id: number;
   title: string;
@@ -61,7 +58,7 @@ export interface TodoFilterRequest {
   endDateTo?: string;
   tag?: string;
   sortBy?: string;
-  sortDir?: 'asc' | 'desc';
+  sortDir?: "asc" | "desc";
   page?: number;
   size?: number;
 }
@@ -74,7 +71,6 @@ export interface TodoStats {
   cancelled: number;
 }
 
-// ── API ───────────────────────────────────────────────────────────────────────
 export interface ApiResponse<T> {
   success: boolean;
   message: string;
@@ -89,7 +85,6 @@ export interface PageResponse<T> {
   size: number;
 }
 
-// ── Kanban ────────────────────────────────────────────────────────────────────
 export interface KanbanColumn {
   id: TodoStatus;
   title: string;

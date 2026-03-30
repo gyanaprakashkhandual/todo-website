@@ -17,6 +17,7 @@ import {
   Inbox,
 } from "lucide-react";
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import type { Todo, Priority, TodoStatus } from "../types/index";
 import { Tooltip } from "../ui/Tooltip.ui";
 
@@ -331,6 +332,8 @@ export default function TodoSidebar({
   const completedCount = todos.filter((t) => t.status === "COMPLETED").length;
   const progress = todos.length > 0 ? (completedCount / todos.length) * 100 : 0;
 
+  const navigate = useNavigate();
+
   return (
     <AnimatePresence>
       {open && (
@@ -341,7 +344,7 @@ export default function TodoSidebar({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-99 lg:hidden"
+            className="fixed inset-0 lg:hidden"
             onClick={onClose}
           />
 
@@ -377,7 +380,9 @@ export default function TodoSidebar({
               <div className="flex items-center gap-2">
                 <Tooltip content="Close">
                   <button
-                    onClick={onClose}
+                    onClick={() => {
+                      navigate("/");
+                    }}
                     className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                   >
                     <X className="w-4 h-4" />

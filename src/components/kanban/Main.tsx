@@ -86,15 +86,8 @@ export default function KanbanPage() {
   const navigate = useNavigate();
   const { showConfirm } = useConfirm();
   const { user, logout } = useAuth();
-  const {
-    todos,
-    stats,
-    tags,
-    filter,
-    loading,
-    statsLoading,
-    draggingId,
-  } = useAppSelector((s) => s.todos);
+  const { todos, stats, tags, filter, loading, statsLoading, draggingId } =
+    useAppSelector((s) => s.todos);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
@@ -112,7 +105,9 @@ export default function KanbanPage() {
     const pending = loadPendingMoves();
     if (pending.length === 0) return;
     pending.forEach((move) => {
-      dispatch(optimisticStatusUpdate({ id: move.todoId, status: move.newStatus }));
+      dispatch(
+        optimisticStatusUpdate({ id: move.todoId, status: move.newStatus }),
+      );
     });
     pending.forEach((move) => {
       syncMoveToAPI(move.todoId, move.newStatus, move.prevStatus);
@@ -122,14 +117,16 @@ export default function KanbanPage() {
 
   const getTodosForColumn = useCallback(
     (status: TodoStatus) => todos.filter((t) => t.status === status),
-    [todos]
+    [todos],
   );
 
   const syncMoveToAPI = useCallback(
     async (todoId: number, newStatus: TodoStatus, prevStatus: TodoStatus) => {
       setSyncingIds((prev) => new Set(prev).add(todoId));
       try {
-        await dispatch(patchTodoStatus({ id: todoId, status: newStatus })).unwrap();
+        await dispatch(
+          patchTodoStatus({ id: todoId, status: newStatus }),
+        ).unwrap();
         dispatch(fetchStats());
         const updated = loadPendingMoves().filter((m) => m.todoId !== todoId);
         savePendingMoves(updated);
@@ -147,7 +144,7 @@ export default function KanbanPage() {
         });
       }
     },
-    [dispatch]
+    [dispatch],
   );
 
   const handleDrop = useCallback(
@@ -157,14 +154,19 @@ export default function KanbanPage() {
       const prevStatus = todo.status;
       dispatch(optimisticStatusUpdate({ id: todoId, status: newStatus }));
       dispatch(setDraggingId(null));
-      const move: PendingMove = { todoId, newStatus, prevStatus, timestamp: Date.now() };
+      const move: PendingMove = {
+        todoId,
+        newStatus,
+        prevStatus,
+        timestamp: Date.now(),
+      };
       const existing = loadPendingMoves().filter((m) => m.todoId !== todoId);
       const updated = [...existing, move];
       savePendingMoves(updated);
       syncQueueRef.current = updated;
       syncMoveToAPI(todoId, newStatus, prevStatus);
     },
-    [todos, dispatch, syncMoveToAPI]
+    [todos, dispatch, syncMoveToAPI],
   );
 
   const openCreate = (status: TodoStatus = "PENDING") => {
@@ -220,8 +222,20 @@ export default function KanbanPage() {
         {loading && todos.length === 0 ? (
           <div className="flex items-center justify-center h-64">
             <div className="flex items-center gap-3 text-gray-500 dark:text-gray-400">
-              <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeDasharray="60" strokeDashoffset="20" />
+              <svg
+                className="animate-spin w-5 h-5"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  strokeDasharray="60"
+                  strokeDashoffset="20"
+                />
               </svg>
               <span className="text-sm font-medium">Loading tasks…</span>
             </div>

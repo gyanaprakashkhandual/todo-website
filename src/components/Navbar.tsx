@@ -181,6 +181,7 @@ function PriorityFilter({ value, onChange }: PriorityFilterProps) {
     </ActionMenu>
   );
 }
+
 interface TagFilterProps {
   value: string | undefined;
   tags: string[];
@@ -252,7 +253,6 @@ function ProfileMenu({ user, onLogout }: ProfileMenuProps) {
       </ActionMenu.Anchor>
 
       <ActionMenu.Overlay minWidth={200} maxWidth={240}>
-        {/* User info header */}
         <ActionMenu.Header>
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-200 text-xs font-bold shrink-0">
@@ -335,7 +335,6 @@ function MobileFilters({
 
   return (
     <div className="px-4 py-3 flex flex-col gap-3 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800">
-      {/* Search */}
       <div className="relative">
         <Search
           className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none"
@@ -353,7 +352,6 @@ function MobileFilters({
         />
       </div>
 
-      {/* Filters row */}
       <div className="flex items-center gap-2 flex-wrap">
         <PriorityFilter
           value={filter.priority}
@@ -388,7 +386,6 @@ function MobileFilters({
         </AnimatePresence>
       </div>
 
-      {/* Stats row */}
       <div className="flex items-center gap-1.5 flex-wrap">
         {statItems.map((s, i) => (
           <StatPill key={s.label} {...s} index={i} loading={statsLoading} />
@@ -446,9 +443,7 @@ export default function Navbar({
 
   return (
     <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 sticky top-0 z-40">
-      {/* ── Primary bar ── */}
       <div className="px-4 md:px-6 h-14 flex items-center justify-between gap-3">
-        {/* ── Logo ── */}
         <motion.div
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
@@ -463,16 +458,13 @@ export default function Navbar({
           </span>
         </motion.div>
 
-        {/* ── Stats — lg+ ── */}
         <div className="hidden lg:flex items-center gap-3 shrink-0">
           {statItems.map((s, i) => (
             <StatPill key={s.label} {...s} index={i} loading={statsLoading} />
           ))}
         </div>
 
-        {/* ── Search + filters — md+ ── */}
-        <div className="hidden md:flex items-center gap-2 flex-1 max-w-[500px] min-w-[500px]">
-          {/* Search input */}
+        <div className="hidden md:flex items-center gap-2 flex-1 max-w-125 min-w-125">
           <div className="relative flex-1 min-w-0">
             <Search
               className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none"
@@ -490,20 +482,17 @@ export default function Navbar({
             />
           </div>
 
-          {/* Priority ActionMenu */}
           <PriorityFilter
             value={filter.priority}
             onChange={(p) => onFilterChange({ priority: p })}
           />
 
-          {/* Tag ActionMenu */}
           <TagFilter
             value={filter.tag}
             tags={tags}
             onChange={(t) => onFilterChange({ tag: t })}
           />
 
-          {/* Clear filters */}
           <AnimatePresence>
             {hasFilters && (
               <motion.button
@@ -527,12 +516,9 @@ export default function Navbar({
           </AnimatePresence>
         </div>
 
-        {/* ── Spacer ── */}
         <div className="flex-1 hidden md:block" />
 
-        {/* ── Right actions ── */}
         <div className="flex items-center gap-2 shrink-0">
-          {/* Mobile: filter toggle — hidden md+ */}
           <div className="relative md:hidden">
             <Tooltip content="Filters" position="bottom">
               <motion.button
@@ -545,7 +531,6 @@ export default function Navbar({
               </motion.button>
             </Tooltip>
 
-            {/* Active dot badge */}
             <AnimatePresence>
               {hasFilters && (
                 <motion.span
@@ -559,10 +544,8 @@ export default function Navbar({
             </AnimatePresence>
           </div>
 
-          {/* Theme toggle ActionMenu */}
           <ThemeToggle />
 
-          {/* New task */}
           <motion.button
             whileTap={{ scale: 0.95 }}
             whileHover={{ scale: 1.02 }}
@@ -574,14 +557,12 @@ export default function Navbar({
             <span className="hidden sm:inline">New task</span>
           </motion.button>
 
-          {/* Profile ActionMenu */}
           <Tooltip content="Profile">
             <ProfileMenu user={user} onLogout={onLogout} />
           </Tooltip>
         </div>
       </div>
 
-      {/* ── Mobile filters drawer ── */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div

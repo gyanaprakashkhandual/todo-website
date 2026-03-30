@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, {
   forwardRef,
   useRef,
@@ -30,7 +28,6 @@ function cn(...classes: (string | undefined | null | false)[]): string {
   return classes.filter(Boolean).join(" ");
 }
 
-// Root component — provides context & positioning wrapper
 export interface ActionMenuProps extends Omit<
   ActionMenuProviderProps,
   "nested"
@@ -60,7 +57,6 @@ function ActionMenuRoot({
   );
 }
 
-// Custom trigger wrapper
 export interface ActionMenuAnchorProps {
   children: React.ReactElement;
 }
@@ -91,7 +87,6 @@ function ActionMenuAnchor({ children }: ActionMenuAnchorProps) {
   });
 }
 
-// Styled trigger button
 export interface ActionMenuButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   leadingIcon?: React.ReactNode;
   showChevron?: boolean;
@@ -170,7 +165,6 @@ const ActionMenuButton = forwardRef<HTMLButtonElement, ActionMenuButtonProps>(
   },
 );
 
-// Floating overlay panel (portaled)
 export interface ActionMenuOverlayProps {
   children: React.ReactNode;
   minWidth?: number;
@@ -179,9 +173,7 @@ export interface ActionMenuOverlayProps {
   className?: string;
 }
 
-import { type Variants } from "framer-motion";
-
-const overlayVariants: Variants = {
+const overlayVariants = {
   hidden: {
     opacity: 0,
     scale: 0.95,
@@ -265,7 +257,6 @@ function ActionMenuOverlay({
   return createPortal(overlay, document.body);
 }
 
-// List container + optional built-in search & selection
 export interface ActionMenuListProps {
   children: React.ReactNode;
   className?: string;
@@ -376,12 +367,9 @@ function ActionMenuList({
 
       setSelectedItems((prev) => {
         const newSelected = new Set(prev);
-        // For single selection: always replace with the new item
-        // Only deselect if clicking the same item twice
         if (newSelected.has(itemLabel)) {
           newSelected.delete(itemLabel);
         } else {
-          // Clear all and add only this item (single selection)
           newSelected.clear();
           newSelected.add(itemLabel);
         }
@@ -539,7 +527,6 @@ function ActionMenuList({
   );
 }
 
-// Individual menu item
 export interface ActionMenuItemProps {
   children: React.ReactNode;
   onSelect?: () => void;
@@ -552,7 +539,6 @@ export interface ActionMenuItemProps {
   selectionVariant?: "single" | "multiple";
   description?: string;
   className?: string;
-  /** If true, menu will not close when this item is clicked */
   select?: boolean;
 }
 
@@ -660,7 +646,6 @@ function ActionMenuItem({
   );
 }
 
-// Submenu trigger item (used inside list)
 export interface ActionMenuSubmenuItemProps {
   children: React.ReactNode;
   leadingIcon?: React.ReactNode;
@@ -718,7 +703,6 @@ function ActionMenuSubmenuItem({
   );
 }
 
-// Separator line
 function ActionMenuDivider() {
   return (
     <li
@@ -729,7 +713,6 @@ function ActionMenuDivider() {
   );
 }
 
-// Labelled group
 export interface ActionMenuGroupProps {
   label?: string;
   children: React.ReactNode;
@@ -757,7 +740,6 @@ function ActionMenuGroup({ label, children, className }: ActionMenuGroupProps) {
   );
 }
 
-// Optional header inside overlay
 export interface ActionMenuHeaderProps {
   children: React.ReactNode;
   className?: string;
@@ -776,7 +758,6 @@ function ActionMenuHeader({ children, className }: ActionMenuHeaderProps) {
   );
 }
 
-// Optional footer inside overlay
 export interface ActionMenuFooterProps {
   children: React.ReactNode;
   className?: string;
@@ -795,7 +776,6 @@ function ActionMenuFooter({ children, className }: ActionMenuFooterProps) {
   );
 }
 
-// Nested menu root (defaults to right-start positioning)
 export interface ActionMenuNestedProps extends Omit<
   ActionMenuProps,
   "nested" | "position"

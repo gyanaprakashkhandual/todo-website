@@ -1,25 +1,25 @@
-'use client';
+"use client";
 
-import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { positionClasses, calculatePosition } from '../context/Tooltip.context';
+import React, { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { positionClasses, calculatePosition } from "../context/Tooltip.context";
 
 interface TooltipProps {
   content?: string;
   children: React.ReactNode;
-  position?: 'top' | 'bottom' | 'left' | 'right';
+  position?: "top" | "bottom" | "left" | "right";
   delay?: number;
   maxWidth?: number;
   className?: string;
 }
 
 export const Tooltip = ({
-  content = '',
+  content = "",
   children,
-  position = 'bottom',
+  position = "bottom",
   delay = 0,
   maxWidth = 200,
-  className = ''
+  className = "",
 }: TooltipProps) => {
   const [isVisible, setIsVisible] = useState(false);
   const [calculatedPosition, setCalculatedPosition] = useState(position);
@@ -33,15 +33,15 @@ export const Tooltip = ({
       const trigger = triggerRef.current.getBoundingClientRect();
       const tooltip = tooltipRef.current.getBoundingClientRect();
       const newPosition = calculatePosition(trigger, tooltip, position);
-      setCalculatedPosition(newPosition as 'top' | 'bottom' | 'left' | 'right');
+      setCalculatedPosition(newPosition as "top" | "bottom" | "left" | "right");
     }
   }, [isVisible, position]);
 
-// ...existing code...
+  // ...existing code...
   const animationVariants = {
     hidden: { opacity: 0, scale: 0.8 },
     visible: { opacity: 1, scale: 1 },
-    exit: { opacity: 0, scale: 0.8 }
+    exit: { opacity: 0, scale: 0.8 },
   };
 
   return (

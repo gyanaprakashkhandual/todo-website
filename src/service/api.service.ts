@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { API_CONFIG, TOKEN_KEY } from "../configs/config";
-import type { ApiResponse } from '../types';
+import type { ApiResponse } from "../types";
 
 class ApiClient {
   private baseUrl: string;
@@ -9,22 +10,36 @@ class ApiClient {
   }
 
   private getToken(): string | null {
-    if (typeof window === 'undefined') return null;
+    if (typeof window === "undefined") return null;
     return localStorage.getItem(TOKEN_KEY);
   }
 
   private getHeaders(includeAuth = true): HeadersInit {
-    const headers: HeadersInit = { 'Content-Type': 'application/json' };
+    const headers: HeadersInit = { "Content-Type": "application/json" };
     if (includeAuth) {
       const token = this.getToken();
-      if (token) headers['Authorization'] = `Bearer ${token}`;
+      if (token) headers["Authorization"] = `Bearer ${token}`;
     }
     return headers;
   }
 
-  async get<T>(endpoint: string): Promise<ApiResponse<T>> {
+  async patch<T>(endpoint: string, body: unknown): Promise<ApiResponse<T>> {
     const res = await fetch(`${this.baseUrl}${endpoint}`, {
-      method: 'GET',
+      method: "PATCH",
+      headers: this.getHeaders(),
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    if (!res.ok) throw data;
+    return data;
+  }
+
+  async get<T>(
+    endpoint: string,
+    _p0: Record<string, string | number | boolean | undefined>,
+  ): Promise<ApiResponse<T>> {
+    const res = await fetch(`${this.baseUrl}${endpoint}`, {
+      method: "GET",
       headers: this.getHeaders(),
     });
     const data = await res.json();
@@ -32,9 +47,13 @@ class ApiClient {
     return data;
   }
 
-  async post<T>(endpoint: string, body: unknown, auth = false): Promise<ApiResponse<T>> {
+  async post<T>(
+    endpoint: string,
+    body: unknown,
+    auth = false,
+  ): Promise<ApiResponse<T>> {
     const res = await fetch(`${this.baseUrl}${endpoint}`, {
-      method: 'POST',
+      method: "POST",
       headers: this.getHeaders(auth),
       body: JSON.stringify(body),
     });
@@ -45,7 +64,7 @@ class ApiClient {
 
   async put<T>(endpoint: string, body: unknown): Promise<ApiResponse<T>> {
     const res = await fetch(`${this.baseUrl}${endpoint}`, {
-      method: 'PUT',
+      method: "PUT",
       headers: this.getHeaders(),
       body: JSON.stringify(body),
     });
@@ -56,10 +75,11 @@ class ApiClient {
 
   async delete<T>(endpoint: string): Promise<ApiResponse<T>> {
     const res = await fetch(`${this.baseUrl}${endpoint}`, {
-      method: 'DELETE',
+      method: "DELETE",
       headers: this.getHeaders(),
     });
-    if (res.status === 204) return { success: true, message: 'Deleted' } as ApiResponse<T>;
+    if (res.status === 204)
+      return { success: true, message: "Deleted" } as ApiResponse<T>;
     const data = await res.json();
     if (!res.ok) throw data;
     return data;

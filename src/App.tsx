@@ -22,7 +22,6 @@ import TodoFullViewPage from "./components/Full.view";
 import { ConfirmProvider } from "./context/Confirm.context";
 import { ActionMenuProvider } from "./context/Action.menu.ui.context";
 
-// ─── Inner app (has access to all contexts) ───────────────────────────────────
 function AppContent() {
   const { isAuthenticated, isLoading } = useAuth();
   const [showAuth, setShowAuth] = useState(false);
@@ -32,7 +31,6 @@ function AppContent() {
   return (
     <Router>
       <Routes>
-        {/* Root: dashboard or landing */}
         <Route
           path="/"
           element={
@@ -46,53 +44,37 @@ function AppContent() {
           }
         />
 
-        {/* Full todo detail view — protected */}
         <Route
           path="/todo/:id"
           element={
-            isAuthenticated ? (
-              <TodoFullViewPage />
-            ) : (
-              <Navigate to="/" replace />
-            )
+            isAuthenticated ? <TodoFullViewPage /> : <Navigate to="/" replace />
           }
         />
 
-        {/* Direct auth route */}
         <Route
           path="/auth"
-          element={
-            isAuthenticated ? <Navigate to="/" replace /> : <AuthPage />
-          }
+          element={isAuthenticated ? <Navigate to="/" replace /> : <AuthPage />}
         />
 
-        {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );
 }
 
-// ─── Root: providers wrapping in correct dependency order ─────────────────────
-// Order matters:
-//   1. Redux store  → global state, no deps
-//   2. ThemeProvider → reads nothing from auth/todo
-//   3. AuthProvider  → may read theme; needed by TodoProvider
-//   4. TodoProvider  → needs auth token for API calls
-//   5. AppContent    → consumes everything above
 export default function App() {
   return (
     <Provider store={store}>
       <ActionMenuProvider>
-      <ConfirmProvider>
-      <ThemeProvider>
-        <AuthProvider>
-          <TodoProvider>
-            <AppContent />
-          </TodoProvider>
-        </AuthProvider>
-      </ThemeProvider>
-      </ConfirmProvider>
+        <ConfirmProvider>
+          <ThemeProvider>
+            <AuthProvider>
+              <TodoProvider>
+                <AppContent />
+              </TodoProvider>
+            </AuthProvider>
+          </ThemeProvider>
+        </ConfirmProvider>
       </ActionMenuProvider>
     </Provider>
   );

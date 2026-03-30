@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/refs */
 /* eslint-disable react-refresh/only-export-components */
 import {
   createContext,
@@ -50,7 +51,9 @@ const ActionMenuContext = createContext<ActionMenuContextValue | null>(null);
 export function useActionMenu(): ActionMenuContextValue {
   const ctx = useContext(ActionMenuContext);
   if (!ctx) {
-    throw new Error("useActionMenu must be used within an <ActionMenu.Provider>");
+    throw new Error(
+      "useActionMenu must be used within an <ActionMenu.Provider>",
+    );
   }
   return ctx;
 }
@@ -68,21 +71,79 @@ export function computePosition(
   preference: MenuPosition,
   viewport: { width: number; height: number },
 ): ComputedPosition {
-  const positions: Record<Exclude<MenuPosition, "auto">, () => ComputedPosition> = {
-    "bottom-start": () => ({ top: anchor.bottom + MENU_MARGIN, left: anchor.left, transformOrigin: "top left", placement: "bottom-start" }),
-    "bottom-end": () => ({ top: anchor.bottom + MENU_MARGIN, left: anchor.right - overlay.width, transformOrigin: "top right", placement: "bottom-end" }),
-    "bottom-center": () => ({ top: anchor.bottom + MENU_MARGIN, left: anchor.left + anchor.width / 2 - overlay.width / 2, transformOrigin: "top center", placement: "bottom-center" }),
-    "top-start": () => ({ top: anchor.top - overlay.height - MENU_MARGIN, left: anchor.left, transformOrigin: "bottom left", placement: "top-start" }),
-    "top-end": () => ({ top: anchor.top - overlay.height - MENU_MARGIN, left: anchor.right - overlay.width, transformOrigin: "bottom right", placement: "top-end" }),
-    "top-center": () => ({ top: anchor.top - overlay.height - MENU_MARGIN, left: anchor.left + anchor.width / 2 - overlay.width / 2, transformOrigin: "bottom center", placement: "top-center" }),
-    "left-start": () => ({ top: anchor.top, left: anchor.left - overlay.width - MENU_MARGIN, transformOrigin: "right top", placement: "left-start" }),
-    "left-end": () => ({ top: anchor.bottom - overlay.height, left: anchor.left - overlay.width - MENU_MARGIN, transformOrigin: "right bottom", placement: "left-end" }),
-    "right-start": () => ({ top: anchor.top, left: anchor.right + MENU_MARGIN, transformOrigin: "left top", placement: "right-start" }),
-    "right-end": () => ({ top: anchor.bottom - overlay.height, left: anchor.right + MENU_MARGIN, transformOrigin: "left bottom", placement: "right-end" }),
+  const positions: Record<
+    Exclude<MenuPosition, "auto">,
+    () => ComputedPosition
+  > = {
+    "bottom-start": () => ({
+      top: anchor.bottom + MENU_MARGIN,
+      left: anchor.left,
+      transformOrigin: "top left",
+      placement: "bottom-start",
+    }),
+    "bottom-end": () => ({
+      top: anchor.bottom + MENU_MARGIN,
+      left: anchor.right - overlay.width,
+      transformOrigin: "top right",
+      placement: "bottom-end",
+    }),
+    "bottom-center": () => ({
+      top: anchor.bottom + MENU_MARGIN,
+      left: anchor.left + anchor.width / 2 - overlay.width / 2,
+      transformOrigin: "top center",
+      placement: "bottom-center",
+    }),
+    "top-start": () => ({
+      top: anchor.top - overlay.height - MENU_MARGIN,
+      left: anchor.left,
+      transformOrigin: "bottom left",
+      placement: "top-start",
+    }),
+    "top-end": () => ({
+      top: anchor.top - overlay.height - MENU_MARGIN,
+      left: anchor.right - overlay.width,
+      transformOrigin: "bottom right",
+      placement: "top-end",
+    }),
+    "top-center": () => ({
+      top: anchor.top - overlay.height - MENU_MARGIN,
+      left: anchor.left + anchor.width / 2 - overlay.width / 2,
+      transformOrigin: "bottom center",
+      placement: "top-center",
+    }),
+    "left-start": () => ({
+      top: anchor.top,
+      left: anchor.left - overlay.width - MENU_MARGIN,
+      transformOrigin: "right top",
+      placement: "left-start",
+    }),
+    "left-end": () => ({
+      top: anchor.bottom - overlay.height,
+      left: anchor.left - overlay.width - MENU_MARGIN,
+      transformOrigin: "right bottom",
+      placement: "left-end",
+    }),
+    "right-start": () => ({
+      top: anchor.top,
+      left: anchor.right + MENU_MARGIN,
+      transformOrigin: "left top",
+      placement: "right-start",
+    }),
+    "right-end": () => ({
+      top: anchor.bottom - overlay.height,
+      left: anchor.right + MENU_MARGIN,
+      transformOrigin: "left bottom",
+      placement: "right-end",
+    }),
   };
 
   const AUTO_PRIORITY: Exclude<MenuPosition, "auto">[] = [
-    "bottom-start", "bottom-end", "top-start", "top-end", "right-start", "left-start",
+    "bottom-start",
+    "bottom-end",
+    "top-start",
+    "top-end",
+    "right-start",
+    "left-start",
   ];
 
   function fits(pos: ComputedPosition): boolean {
@@ -97,8 +158,14 @@ export function computePosition(
   }
 
   function clamp(pos: ComputedPosition): ComputedPosition {
-    const t = Math.max(MENU_MARGIN, Math.min(pos.top ?? 0, viewport.height - overlay.height - MENU_MARGIN));
-    const l = Math.max(MENU_MARGIN, Math.min(pos.left ?? 0, viewport.width - overlay.width - MENU_MARGIN));
+    const t = Math.max(
+      MENU_MARGIN,
+      Math.min(pos.top ?? 0, viewport.height - overlay.height - MENU_MARGIN),
+    );
+    const l = Math.max(
+      MENU_MARGIN,
+      Math.min(pos.left ?? 0, viewport.width - overlay.width - MENU_MARGIN),
+    );
     return { ...pos, top: t, left: l };
   }
 
@@ -137,7 +204,8 @@ export function ActionMenuProvider({
 
   const anchorRef = useRef<HTMLElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
-  const [computedPosition, setComputedPosition] = useState<ComputedPosition | null>(null);
+  const [computedPosition, setComputedPosition] =
+    useState<ComputedPosition | null>(null);
   const menuId = useRef(generateId()).current;
 
   // Track whether pointer went down inside the overlay — if yes, don't close on click outside

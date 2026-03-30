@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, type ReactNode } from "react";
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useContext, useState, type ReactNode } from "react";
 import type { Todo } from "../types";
 
 interface TodoContextType {

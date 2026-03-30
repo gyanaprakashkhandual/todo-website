@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
 
 export default function LoadingScreen() {
   return (
@@ -12,7 +12,9 @@ export default function LoadingScreen() {
         className="flex flex-col items-center gap-4"
       >
         <div className="w-10 h-10 border-2 border-gray-900 dark:border-white border-t-transparent dark:border-t-transparent rounded-full animate-spin" />
-        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium tracking-wide">Loading...</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium tracking-wide">
+          Loading...
+        </p>
       </motion.div>
     </div>
   );

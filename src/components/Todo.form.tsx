@@ -19,9 +19,6 @@ import {
 import { ActionMenu } from "../ui/Action.menu.ui";
 import type { Todo, TodoRequest, Priority, TodoStatus } from "../types/index";
 
-// ─────────────────────────────────────────────
-// Types
-// ─────────────────────────────────────────────
 interface TodoFormModalProps {
   open: boolean;
   onClose: () => void;
@@ -30,9 +27,6 @@ interface TodoFormModalProps {
   defaultStatus?: TodoStatus;
 }
 
-// ─────────────────────────────────────────────
-// Constants
-// ─────────────────────────────────────────────
 const PRIORITIES: Priority[] = ["LOW", "MEDIUM", "HIGH", "URGENT"];
 const STATUSES: TodoStatus[] = [
   "PENDING",
@@ -125,9 +119,6 @@ const MONTHS = [
   "December",
 ];
 
-// ─────────────────────────────────────────────
-// Helpers
-// ─────────────────────────────────────────────
 function parseDate(str: string): Date | null {
   if (!str) return null;
   const d = new Date(str + "T00:00:00");
@@ -159,9 +150,6 @@ function formatTimeDisplay(str: string): string {
   return `${hour}:${String(m).padStart(2, "0")} ${ampm}`;
 }
 
-// ─────────────────────────────────────────────
-// Custom Calendar Component
-// ─────────────────────────────────────────────
 interface CalendarPickerProps {
   value: string;
   onChange: (val: string) => void;
@@ -209,7 +197,6 @@ function CalendarPicker({ value, onChange, minDate }: CalendarPickerProps) {
       transition={{ duration: 0.16, ease: "easeOut" }}
       className="w-64 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg shadow-black/10 dark:shadow-black/40 p-3 select-none"
     >
-      {/* Header */}
       <div className="flex items-center justify-between mb-2 px-1">
         <button
           type="button"
@@ -230,7 +217,6 @@ function CalendarPicker({ value, onChange, minDate }: CalendarPickerProps) {
         </button>
       </div>
 
-      {/* Day headers */}
       <div className="grid grid-cols-7 mb-1">
         {DAYS_OF_WEEK.map((d) => (
           <div
@@ -242,7 +228,6 @@ function CalendarPicker({ value, onChange, minDate }: CalendarPickerProps) {
         ))}
       </div>
 
-      {/* Days grid */}
       <div className="grid grid-cols-7 gap-y-0.5">
         {cells.map((day, i) => {
           if (day === null) return <div key={`e-${i}`} />;
@@ -276,7 +261,6 @@ function CalendarPicker({ value, onChange, minDate }: CalendarPickerProps) {
         })}
       </div>
 
-      {/* Clear */}
       {value && (
         <button
           type="button"
@@ -290,9 +274,6 @@ function CalendarPicker({ value, onChange, minDate }: CalendarPickerProps) {
   );
 }
 
-// ─────────────────────────────────────────────
-// Custom Time Picker Component
-// ─────────────────────────────────────────────
 interface TimePickerProps {
   value: string;
   onChange: (val: string) => void;
@@ -345,7 +326,6 @@ function TimePicker({ value, onChange }: TimePickerProps) {
       transition={{ duration: 0.16, ease: "easeOut" }}
       className="w-56 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg shadow-black/10 dark:shadow-black/40 p-3 select-none"
     >
-      {/* AM/PM Toggle */}
       <div className="flex gap-1.5 mb-3">
         {(["AM", "PM"] as const).map((ap) => (
           <button
@@ -363,7 +343,6 @@ function TimePicker({ value, onChange }: TimePickerProps) {
         ))}
       </div>
 
-      {/* Hours */}
       <p className="text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1.5 px-0.5">
         Hour
       </p>
@@ -384,7 +363,6 @@ function TimePicker({ value, onChange }: TimePickerProps) {
         ))}
       </div>
 
-      {/* Minutes */}
       <p className="text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1.5 px-0.5">
         Minute
       </p>
@@ -405,7 +383,6 @@ function TimePicker({ value, onChange }: TimePickerProps) {
         ))}
       </div>
 
-      {/* Clear */}
       {value && (
         <button
           type="button"
@@ -419,9 +396,6 @@ function TimePicker({ value, onChange }: TimePickerProps) {
   );
 }
 
-// ─────────────────────────────────────────────
-// Date Field with Popover Calendar
-// ─────────────────────────────────────────────
 interface DateFieldProps {
   label: string;
   value: string;
@@ -512,9 +486,6 @@ function DateField({
   );
 }
 
-// ─────────────────────────────────────────────
-// Time Field with Popover TimePicker
-// ─────────────────────────────────────────────
 interface TimeFieldProps {
   label: string;
   value: string;
@@ -601,9 +572,6 @@ function TimeField({
   );
 }
 
-// ─────────────────────────────────────────────
-// Section Header
-// ─────────────────────────────────────────────
 function SectionHeader({
   icon,
   label,
@@ -622,9 +590,6 @@ function SectionHeader({
   );
 }
 
-// ─────────────────────────────────────────────
-// Main Modal
-// ─────────────────────────────────────────────
 export default function TodoFormModal({
   open,
   onClose,
@@ -649,7 +614,6 @@ export default function TodoFormModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Reset form when modal opens/closes or initial changes
   useEffect(() => {
     if (initial) {
       setForm({
@@ -714,7 +678,6 @@ export default function TodoFormModal({
     }
   };
 
-  // Stagger animation variants for form fields
   const fieldVariants = {
     hidden: { opacity: 0, y: 10 },
     visible: (i: number) => ({
@@ -731,7 +694,6 @@ export default function TodoFormModal({
     <AnimatePresence>
       {open && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4">
-          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -741,7 +703,6 @@ export default function TodoFormModal({
             className="absolute inset-0 bg-black/50 dark:bg-black/70 backdrop-blur-sm"
           />
 
-          {/* Modal */}
           <motion.div
             initial={{ opacity: 0, y: 24, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -758,12 +719,10 @@ export default function TodoFormModal({
               flex flex-col
             "
           >
-            {/* Mobile drag handle */}
             <div className="flex justify-center pt-3 pb-1 sm:hidden">
               <div className="w-8 h-1 rounded-full bg-gray-200 dark:bg-gray-700" />
             </div>
 
-            {/* Header */}
             <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100 dark:border-gray-800 shrink-0">
               <div className="flex items-center gap-2.5">
                 <motion.div
@@ -793,13 +752,11 @@ export default function TodoFormModal({
               </motion.button>
             </div>
 
-            {/* Scrollable body */}
             <form
               onSubmit={handleSubmit}
               className="flex flex-col flex-1 min-h-0"
             >
               <div className="flex-1 overflow-y-auto overscroll-contain px-5 py-4 space-y-5">
-                {/* ── Title ── */}
                 <motion.div
                   custom={0}
                   variants={fieldVariants}
@@ -833,7 +790,6 @@ export default function TodoFormModal({
                   />
                 </motion.div>
 
-                {/* ── Description ── */}
                 <motion.div
                   custom={1}
                   variants={fieldVariants}
@@ -863,7 +819,6 @@ export default function TodoFormModal({
                   />
                 </motion.div>
 
-                {/* ── Priority & Status ── */}
                 <motion.div
                   custom={2}
                   variants={fieldVariants}
@@ -875,7 +830,6 @@ export default function TodoFormModal({
                     label="Priority & Status"
                   />
                   <div className="grid grid-cols-2 gap-3 mt-3">
-                    {/* Priority ActionMenu */}
                     <div>
                       <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wider">
                         Priority
@@ -917,7 +871,6 @@ export default function TodoFormModal({
                       </ActionMenu>
                     </div>
 
-                    {/* Status ActionMenu */}
                     <div>
                       <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wider">
                         Status
@@ -958,7 +911,6 @@ export default function TodoFormModal({
                     </div>
                   </div>
 
-                  {/* Selected badges */}
                   <div className="flex items-center gap-2 mt-2.5">
                     <span
                       className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold border ${priorityMeta.bg} ${priorityMeta.border} ${priorityMeta.text}`}
@@ -979,7 +931,6 @@ export default function TodoFormModal({
                   </div>
                 </motion.div>
 
-                {/* ── Dates & Times ── */}
                 <motion.div
                   custom={3}
                   variants={fieldVariants}
@@ -1019,7 +970,6 @@ export default function TodoFormModal({
                   </div>
                 </motion.div>
 
-                {/* ── Notes ── */}
                 <motion.div
                   custom={4}
                   variants={fieldVariants}
@@ -1055,7 +1005,6 @@ export default function TodoFormModal({
                   </div>
                 </motion.div>
 
-                {/* ── Reference Link ── */}
                 <motion.div
                   custom={5}
                   variants={fieldVariants}
@@ -1089,7 +1038,6 @@ export default function TodoFormModal({
                   </div>
                 </motion.div>
 
-                {/* ── Tags ── */}
                 <motion.div
                   custom={6}
                   variants={fieldVariants}
@@ -1173,7 +1121,6 @@ export default function TodoFormModal({
                   </div>
                 </motion.div>
 
-                {/* ── Error ── */}
                 <AnimatePresence>
                   {error && (
                     <motion.p
@@ -1188,9 +1135,7 @@ export default function TodoFormModal({
                 </AnimatePresence>
               </div>
 
-              {/* ── Footer ── */}
               <div className="flex items-center justify-between gap-3 px-5 py-3.5 border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900 shrink-0">
-                {/* Activity indicator badge */}
                 <div
                   className={`hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium border ${statusMeta.bg} ${statusMeta.border} ${statusMeta.text}`}
                 >

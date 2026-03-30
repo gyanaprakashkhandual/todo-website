@@ -1,9 +1,16 @@
-'use client';
+/* eslint-disable react-refresh/only-export-components */
+"use client";
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import type { User, LoginRequest, RegisterRequest } from '../types/index';
-import { apiClient } from '../service/api.service';
-import { API_ENDPOINTS, TOKEN_KEY, USER_KEY } from '../configs/config';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
+import type { User, LoginRequest, RegisterRequest } from "../types/index";
+import { apiClient } from "../service/api.service";
+import { API_ENDPOINTS, TOKEN_KEY, USER_KEY } from "../configs/config";
 
 interface AuthContextValue {
   user: User | null;
@@ -17,12 +24,12 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-function decodeUser(jwt: string, fallbackName = ''): User {
+function decodeUser(jwt: string, fallbackName = ""): User {
   try {
-    const payload = JSON.parse(atob(jwt.split('.')[1]));
-    return { name: payload.name || fallbackName, email: payload.sub || '' };
+    const payload = JSON.parse(atob(jwt.split(".")[1]));
+    return { name: payload.name || fallbackName, email: payload.sub || "" };
   } catch {
-    return { name: fallbackName, email: '' };
+    return { name: fallbackName, email: "" };
   }
 }
 
@@ -43,13 +50,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Handles: http://localhost:3000/oauth2/redirect?token=xxx
     //      or: http://localhost:3000/?token=xxx
     const params = new URLSearchParams(window.location.search);
-    const urlToken = params.get('token');
+    const urlToken = params.get("token");
 
     if (urlToken) {
       const userObj = decodeUser(urlToken);
       persistSession(urlToken, userObj);
       // Clean URL → redirect to root
-      window.history.replaceState({}, '', '/');
+      window.history.replaceState({}, "", "/");
       setIsLoading(false);
       return;
     }
@@ -70,17 +77,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [persistSession]);
 
-  const login = useCallback(async (data: LoginRequest) => {
-    const res = await apiClient.post<{ token: string }>(API_ENDPOINTS.AUTH.LOGIN, data);
-    const jwt = res.data!.token;
-    persistSession(jwt, decodeUser(jwt));
-  }, [persistSession]);
+  const login = useCallback(
+    async (data: LoginRequest) => {
+      const res = await apiClient.post<{ token: string }>(
+        API_ENDPOINTS.AUTH.LOGIN,
+        data,
+      );
+      const jwt = res.data!.token;
+      persistSession(jwt, decodeUser(jwt));
+    },
+    [persistSession],
+  );
 
-  const register = useCallback(async (data: RegisterRequest) => {
-    const res = await apiClient.post<{ token: string }>(API_ENDPOINTS.AUTH.REGISTER, data);
-    const jwt = res.data!.token;
-    persistSession(jwt, decodeUser(jwt, data.name));
-  }, [persistSession]);
+  const register = useCallback(
+    async (data: RegisterRequest) => {
+      const res = await apiClient.post<{ token: string }>(
+        API_ENDPOINTS.AUTH.REGISTER,
+        data,
+      );
+      const jwt = res.data!.token;
+      persistSession(jwt, decodeUser(jwt, data.name));
+    },
+    [persistSession],
+  );
 
   const logout = useCallback(() => {
     localStorage.removeItem(TOKEN_KEY);
@@ -90,7 +109,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, token, isAuthenticated: !!token, isLoading, login, register, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        token,
+        isAuthenticated: !!token,
+        isLoading,
+        login,
+        register,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -98,6 +127,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 export function useAuth() {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used inside AuthProvider');
+  if (!ctx) throw new Error("useAuth must be used inside AuthProvider");
   return ctx;
 }

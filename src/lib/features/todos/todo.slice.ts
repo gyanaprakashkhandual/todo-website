@@ -1,6 +1,10 @@
-import { createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { apiClient } from '../../../service/api.service';
-import { API_ENDPOINTS } from '../../../configs/config';
+import {
+  createAsyncThunk,
+  createSlice,
+  type PayloadAction,
+} from "@reduxjs/toolkit";
+import { apiClient } from "../../../service/api.service";
+import { API_ENDPOINTS } from "../../../configs/config";
 import type {
   Todo,
   TodoRequest,
@@ -8,9 +12,8 @@ import type {
   TodoStats,
   TodoStatus,
   PageResponse,
-} from '../../../types';
+} from "../../../types";
 
-// ── State ─────────────────────────────────────────────────────────────────────
 interface TodoState {
   todos: Todo[];
   stats: TodoStats | null;
@@ -32,31 +35,30 @@ const initialState: TodoState = {
   totalElements: 0,
   totalPages: 0,
   currentPage: 0,
-  filter: { sortBy: 'createdAt', sortDir: 'desc', page: 0, size: 100 },
+  filter: { sortBy: "createdAt", sortDir: "desc", page: 0, size: 100 },
   loading: false,
   statsLoading: false,
   error: null,
   draggingId: null,
 };
 
-// ── Thunks ────────────────────────────────────────────────────────────────────
 export const fetchTodos = createAsyncThunk(
-  'todos/fetchAll',
+  "todos/fetchAll",
   async (filter: TodoFilterRequest, { rejectWithValue }) => {
     try {
       const res = await apiClient.get<PageResponse<Todo>>(
         API_ENDPOINTS.TODOS.BASE,
-        filter as Record<string, string | number | boolean | undefined>
+        filter as Record<string, string | number | boolean | undefined>,
       );
       return res.data;
     } catch (e: unknown) {
       return rejectWithValue((e as Error).message);
     }
-  }
+  },
 );
 
 export const fetchStats = createAsyncThunk(
-  'todos/fetchStats',
+  "todos/fetchStats",
   async (_, { rejectWithValue }) => {
     try {
       const res = await apiClient.get<TodoStats>(API_ENDPOINTS.TODOS.STATS);
@@ -64,11 +66,11 @@ export const fetchStats = createAsyncThunk(
     } catch (e: unknown) {
       return rejectWithValue((e as Error).message);
     }
-  }
+  },
 );
 
 export const fetchTags = createAsyncThunk(
-  'todos/fetchTags',
+  "todos/fetchTags",
   async (_, { rejectWithValue }) => {
     try {
       const res = await apiClient.get<string[]>(API_ENDPOINTS.TODOS.TAGS);
@@ -76,11 +78,11 @@ export const fetchTags = createAsyncThunk(
     } catch (e: unknown) {
       return rejectWithValue((e as Error).message);
     }
-  }
+  },
 );
 
 export const createTodo = createAsyncThunk(
-  'todos/create',
+  "todos/create",
   async (req: TodoRequest, { rejectWithValue }) => {
     try {
       const res = await apiClient.post<Todo>(API_ENDPOINTS.TODOS.BASE, req);
@@ -88,35 +90,44 @@ export const createTodo = createAsyncThunk(
     } catch (e: unknown) {
       return rejectWithValue((e as Error).message);
     }
-  }
+  },
 );
 
 export const updateTodo = createAsyncThunk(
-  'todos/update',
-  async ({ id, req }: { id: number; req: TodoRequest }, { rejectWithValue }) => {
+  "todos/update",
+  async (
+    { id, req }: { id: number; req: TodoRequest },
+    { rejectWithValue },
+  ) => {
     try {
       const res = await apiClient.put<Todo>(API_ENDPOINTS.TODOS.BY_ID(id), req);
       return res.data;
     } catch (e: unknown) {
       return rejectWithValue((e as Error).message);
     }
-  }
+  },
 );
 
 export const patchTodoStatus = createAsyncThunk(
-  'todos/patchStatus',
-  async ({ id, status }: { id: number; status: TodoStatus }, { rejectWithValue }) => {
+  "todos/patchStatus",
+  async (
+    { id, status }: { id: number; status: TodoStatus },
+    { rejectWithValue },
+  ) => {
     try {
-      const res = await apiClient.patch<Todo>(API_ENDPOINTS.TODOS.STATUS(id), { value: status });
+      const res = await apiClient.patch<Todo>(
+        `${API_ENDPOINTS.TODOS.STATUS(id)}?value=${status}`,
+        {},
+      );
       return res.data;
     } catch (e: unknown) {
       return rejectWithValue((e as Error).message);
     }
-  }
+  },
 );
 
 export const deleteTodo = createAsyncThunk(
-  'todos/delete',
+  "todos/delete",
   async (id: number, { rejectWithValue }) => {
     try {
       await apiClient.delete(API_ENDPOINTS.TODOS.BY_ID(id));
@@ -124,12 +135,11 @@ export const deleteTodo = createAsyncThunk(
     } catch (e: unknown) {
       return rejectWithValue((e as Error).message);
     }
-  }
+  },
 );
 
-// ── Slice ─────────────────────────────────────────────────────────────────────
 const todoSlice = createSlice({
-  name: 'todos',
+  name: "todos",
   initialState,
   reducers: {
     setFilter(state, action: PayloadAction<Partial<TodoFilterRequest>>) {
@@ -141,17 +151,15 @@ const todoSlice = createSlice({
     setDraggingId(state, action: PayloadAction<number | null>) {
       state.draggingId = action.payload;
     },
-    // Optimistic status update for smooth drag & drop
     optimisticStatusUpdate(
       state,
-      action: PayloadAction<{ id: number; status: TodoStatus }>
+      action: PayloadAction<{ id: number; status: TodoStatus }>,
     ) {
       const todo = state.todos.find((t) => t.id === action.payload.id);
       if (todo) todo.status = action.payload.status;
     },
   },
   extraReducers: (builder) => {
-    // fetchTodos
     builder
       .addCase(fetchTodos.pending, (state) => {
         state.loading = true;
@@ -169,21 +177,22 @@ const todoSlice = createSlice({
         state.error = action.payload as string;
       });
 
-    // fetchStats
     builder
-      .addCase(fetchStats.pending, (state) => { state.statsLoading = true; })
+      .addCase(fetchStats.pending, (state) => {
+        state.statsLoading = true;
+      })
       .addCase(fetchStats.fulfilled, (state, action) => {
         state.statsLoading = false;
         state.stats = action.payload;
       })
-      .addCase(fetchStats.rejected, (state) => { state.statsLoading = false; });
+      .addCase(fetchStats.rejected, (state) => {
+        state.statsLoading = false;
+      });
 
-    // fetchTags
     builder.addCase(fetchTags.fulfilled, (state, action) => {
       state.tags = action.payload;
     });
 
-    // createTodo
     builder
       .addCase(createTodo.fulfilled, (state, action) => {
         state.todos.unshift(action.payload);
@@ -193,7 +202,6 @@ const todoSlice = createSlice({
         state.error = action.payload as string;
       });
 
-    // updateTodo
     builder
       .addCase(updateTodo.fulfilled, (state, action) => {
         const idx = state.todos.findIndex((t) => t.id === action.payload.id);
@@ -203,18 +211,15 @@ const todoSlice = createSlice({
         state.error = action.payload as string;
       });
 
-    // patchTodoStatus
     builder
       .addCase(patchTodoStatus.fulfilled, (state, action) => {
         const idx = state.todos.findIndex((t) => t.id === action.payload.id);
         if (idx !== -1) state.todos[idx] = action.payload;
-        // Refresh stats after status change
       })
       .addCase(patchTodoStatus.rejected, (state, action) => {
         state.error = action.payload as string;
       });
 
-    // deleteTodo
     builder
       .addCase(deleteTodo.fulfilled, (state, action) => {
         state.todos = state.todos.filter((t) => t.id !== action.payload);
@@ -226,5 +231,6 @@ const todoSlice = createSlice({
   },
 });
 
-export const { setFilter, clearError, setDraggingId, optimisticStatusUpdate } = todoSlice.actions;
+export const { setFilter, clearError, setDraggingId, optimisticStatusUpdate } =
+  todoSlice.actions;
 export default todoSlice.reducer;

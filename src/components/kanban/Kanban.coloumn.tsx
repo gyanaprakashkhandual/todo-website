@@ -1,9 +1,31 @@
+/* eslint-disable react-refresh/only-export-components */
+/* eslint-disable no-empty */
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Todo, TodoStatus } from "../../types/index";
 import KanbanCard from "./Kanban.card";
 import { Tooltip } from "../../ui/Tooltip.ui";
 import { Plus } from "lucide-react";
+
+const LS_KEY = "kanban_optimistic_moves";
+
+function saveOptimisticMove(todoId: number, status: TodoStatus) {
+  try {
+    const existing = JSON.parse(localStorage.getItem(LS_KEY) || "{}");
+    existing[todoId] = status;
+    localStorage.setItem(LS_KEY, JSON.stringify(existing));
+  } catch {}
+}
+
+function removeOptimisticMove(todoId: number) {
+  try {
+    const existing = JSON.parse(localStorage.getItem(LS_KEY) || "{}");
+    delete existing[todoId];
+    localStorage.setItem(LS_KEY, JSON.stringify(existing));
+  } catch {}
+}
+
+export { saveOptimisticMove, removeOptimisticMove };
 
 interface KanbanColumnProps {
   id: TodoStatus;
@@ -16,7 +38,7 @@ interface KanbanColumnProps {
   onEdit: (todo: Todo) => void;
   onDelete: (id: number) => void;
   onAddNew: (status: TodoStatus) => void;
-  onViewDetail: (todo: Todo) => void; // ← new
+  onViewDetail: (todo: Todo) => void;
   draggingId: number | null;
   syncingIds?: Set<number>;
 }
@@ -25,8 +47,6 @@ export default function KanbanColumn({
   id,
   title,
   color,
-  headerBg,
-  dotColor,
   todos,
   onDrop,
   onEdit,
@@ -52,12 +72,21 @@ export default function KanbanColumn({
     e.preventDefault();
     setIsOver(false);
     const todoId = Number(e.dataTransfer.getData("todoId"));
-    if (todoId) onDrop(todoId, id);
+    if (!todoId) return;
+
+    saveOptimisticMove(todoId, id);
+
+    Promise.resolve(onDrop(todoId, id))
+      .then(() => {
+        removeOptimisticMove(todoId);
+      })
+      .catch(() => {
+        removeOptimisticMove(todoId);
+      });
   };
 
   return (
-    <div className="flex flex-col w-[340px] min-w-[300px] max-w-[360px] flex-shrink-0 min-h-[84vh] max-h-[84vh]">
-      {/* Column header */}
+    <div className="flex flex-col w-85 min-w-75 max-w-90 shrink-0 min-h-[84vh] max-h-[84vh]">
       <div className="flex items-center justify-between px-3 py-2.5 mb-3 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm">
         <div className="flex items-center gap-2.5">
           <span
@@ -77,22 +106,21 @@ export default function KanbanColumn({
 
         <Tooltip content={`Add to ${title}`}>
           <motion.button
-          onClick={() => onAddNew(id)}
-          className="w-7 h-7 flex items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-white dark:hover:bg-gray-700 transition-all shadow-sm"
-        >
-          <Plus className="h-3 w-3"/>
-        </motion.button>
+            onClick={() => onAddNew(id)}
+            className="w-7 h-7 flex items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-white dark:hover:bg-gray-700 transition-all shadow-sm"
+          >
+            <Plus className="h-3 w-3" />
+          </motion.button>
         </Tooltip>
       </div>
 
-      {/* Drop zone */}
       <div
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         className={`flex-1 min-h-[79vh] max-h-[79vh] overflow-auto rounded-xl p-2 space-y-2 transition-all duration-200 ${
           isOver
-            ? "bg-blue-50/60 dark:bg-blue-900/10 border-2 border-dashed border-gray-200 dark:border-blue-700 shadow-inner"
+            ? "bg-blue-50/80 dark:bg-blue-900/15 border-2 border-dashed border-blue-400 dark:border-blue-500 shadow-inner scale-[1.01]"
             : "bg-gray-50/70 dark:bg-gray-800/30 border-2 border-transparent"
         }`}
       >
@@ -103,14 +131,13 @@ export default function KanbanColumn({
               todo={todo}
               onEdit={onEdit}
               onDelete={onDelete}
-              onViewDetail={onViewDetail}   // ← passed through
+              onViewDetail={onViewDetail}
               isDragging={draggingId === todo.id}
               isSyncing={syncingIds.has(todo.id)}
             />
           ))}
         </AnimatePresence>
 
-        {/* Empty state */}
         {todos.length === 0 && !isOver && (
           <motion.div
             initial={{ opacity: 0, y: 4 }}
@@ -123,9 +150,14 @@ export default function KanbanColumn({
               style={{ backgroundColor: `${color}12` }}
             >
               <svg
-                width="16" height="16" viewBox="0 0 24 24"
-                fill="none" stroke={color} strokeWidth="1.5"
-                strokeLinecap="round" strokeLinejoin="round"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke={color}
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
                 style={{ opacity: 0.7 }}
               >
                 <rect x="3" y="3" width="18" height="18" rx="3" />
@@ -146,7 +178,6 @@ export default function KanbanColumn({
           </motion.div>
         )}
 
-        {/* Drop hint */}
         <AnimatePresence>
           {isOver && (
             <motion.div

@@ -339,7 +339,7 @@ export default function TodoFullViewPage() {
                   animate="show"
                   className="space-y-4"
                 >
-                  <motion.div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 overflow-hidden">
+                  <motion.div className="bg-white dark:bg-gray-900  dark:border-gray-800 overflow-hidden">
                     <div className="px-6 sm:px-8 pt-6 pb-6 border-b border-gray-100 dark:border-gray-800">
                       <div className="flex flex-wrap items-center gap-2 mb-4">
                         <span
