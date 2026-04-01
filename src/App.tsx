@@ -4,6 +4,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+import OAuth2RedirectPage from "./pages/app/Oauth.page";
 
 import { AuthProvider } from "./context/Auth.context";
 import { ThemeProvider } from "./context/Theme.context";
@@ -169,6 +170,7 @@ function AppContent() {
             </>
           }
         />
+        <Route path="/oauth2/redirect" element={<OAuth2RedirectPage/>}/>
       </Routes>
     </Router>
   );
