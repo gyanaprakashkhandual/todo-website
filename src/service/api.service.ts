@@ -50,7 +50,7 @@ class ApiClient {
   async post<T>(
     endpoint: string,
     body: unknown,
-    auth = false,
+    auth = true,
   ): Promise<ApiResponse<T>> {
     const res = await fetch(`${this.baseUrl}${endpoint}`, {
       method: "POST",
