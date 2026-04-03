@@ -201,11 +201,18 @@ const ActionMenuButton = forwardRef<HTMLButtonElement, ActionMenuButtonProps>(
     },
     ref,
   ) {
-    const { toggleMenu, open, menuId } = useActionMenu();
-    const anchorRef = useRef<HTMLButtonElement>(null);
+    const { toggleMenu, open, menuId, anchorRef } = useActionMenu(); // ← anchorRef from context
+
     return (
       <button
-        ref={ref || anchorRef}
+        ref={(node) => {
+          // Attach to context's anchorRef so the overlay can position itself
+          (anchorRef as React.MutableRefObject<HTMLButtonElement | null>).current = node;
+          // Also honour any forwarded ref from the parent
+          if (typeof ref === "function") ref(node);
+          else if (ref)
+            (ref as React.MutableRefObject<HTMLButtonElement | null>).current = node;
+        }}
         type="button"
         role="button"
         aria-haspopup="menu"
